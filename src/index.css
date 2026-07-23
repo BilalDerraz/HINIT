@@ -136,12 +136,19 @@
   }
 }
 
-/* Process cards: active step scales up + glows (toggled by GSAP) */
+/* Process cards: active step scales up + glows, inactive dim (toggled by GSAP) */
 .proc-card {
   will-change: transform;
 }
-.proc-card.is-active {
-  transform: scale(1.05);
+@media (min-width: 768px) {
+  .proc-card {
+    opacity: 0.45;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .proc-card.is-active {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }
 .proc-card.is-active .proc-glow,
 .proc-card.is-active .proc-grad,
@@ -160,4 +167,224 @@
 .animate-shimmer-line {
   background-size: 200% 100%;
   animation: shimmer-line 6s linear infinite;
+}
+
+/* ============================================================
+   "ALWAYS ALIVE" — ambient loops + primitives
+   ============================================================ */
+
+/* scroll-velocity skew driven by a global CSS var set from Lenis */
+:root {
+  --skew-y: 0deg;
+  --vel-blur: 0px;
+}
+.vel-skew {
+  transform: skewY(var(--skew-y));
+  transition: transform 0.1s linear;
+  will-change: transform;
+}
+
+/* flowing aurora gradient mesh (global, never settles) */
+@keyframes aurora-flow {
+  0% {
+    transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1.25);
+  }
+  50% {
+    transform: translate3d(4%, 3%, 0) rotate(8deg) scale(1.35);
+  }
+  100% {
+    transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1.25);
+  }
+}
+.aurora-blob {
+  animation: aurora-flow 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* rotating conic border */
+@property --bd-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes bd-spin {
+  to {
+    --bd-angle: 360deg;
+  }
+}
+.conic-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--bd-angle),
+    transparent 0deg,
+    rgba(0, 224, 255, 0) 40deg,
+    #00e0ff 90deg,
+    #8b5cff 150deg,
+    rgba(139, 92, 255, 0) 210deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: bd-spin 6s linear infinite;
+  opacity: 0.35;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.conic-border:hover::before {
+  opacity: 1;
+  animation-duration: 3s;
+}
+
+/* light-beam / scanline sweep */
+@keyframes beam-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(120%) skewX(-12deg);
+    opacity: 0;
+  }
+}
+.animate-beam {
+  animation: beam-sweep 7s ease-in-out infinite;
+}
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+.animate-scanline {
+  animation: scanline 9s linear infinite;
+}
+
+/* grain shimmer */
+@keyframes grain-shimmer {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.animate-grain {
+  animation: grain-shimmer 5s ease-in-out infinite;
+}
+
+/* idle float / breathing */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.animate-float {
+  animation: float-y var(--float-dur, 6s) ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+}
+
+/* radar / heartbeat ping ring */
+@keyframes radar-ping {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.animate-radar {
+  animation: radar-ping 2.6s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+/* flowing gradient text */
+@keyframes text-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+.text-gradient-flow {
+  background: linear-gradient(100deg, #3b5bff, #00e0ff, #8b5cff, #00e0ff, #3b5bff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: text-flow 6s linear infinite;
+}
+
+/* RGB-split / liquid warp headline */
+@keyframes rgb-split {
+  0%,
+  100% {
+    text-shadow:
+      0.02em 0 0 rgba(0, 224, 255, 0.35),
+      -0.02em 0 0 rgba(139, 92, 255, 0.35);
+  }
+  50% {
+    text-shadow:
+      -0.02em 0 0 rgba(0, 224, 255, 0.4),
+      0.02em 0 0 rgba(255, 60, 120, 0.3);
+  }
+}
+.animate-rgb-split {
+  animation: rgb-split 4s ease-in-out infinite;
+}
+
+/* soft idle pulse for icons */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.09);
+    opacity: 1;
+  }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 3.4s ease-in-out infinite;
+}
+
+/* conic sweep glow (used behind cards / CTA) */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 16s linear infinite;
 }

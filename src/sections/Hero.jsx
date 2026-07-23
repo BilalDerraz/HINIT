@@ -1,53 +1,89 @@
+import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Check, ArrowRight, ArrowDown } from 'lucide-react';
 import { useI18n } from '../i18n';
 import Particles from '../lib/reactbits/Particles';
 import RotatingWord from '../components/RotatingWord';
+import RepelText from '../components/RepelText';
 import CTAButton from '../components/CTAButton';
 
 const ease = [0.16, 1, 0.3, 1];
 const BASE = 1.75; // sync entrance with the preloader wipe
 
-function Word({ children, i }) {
-  return (
-    <span className="inline-block overflow-hidden align-bottom" style={{ paddingBottom: '0.1em' }}>
-      <motion.span
-        className="inline-block"
-        initial={{ y: '110%' }}
-        animate={{ y: '0%' }}
-        transition={{ delay: BASE + 0.15 + i * 0.12, duration: 0.9, ease }}
-      >
-        {children}
-      </motion.span>
-    </span>
-  );
-}
-
 export default function Hero() {
   const { t } = useI18n();
-  const staticWords = t.hero.titleStatic.split(' ');
+  const layersRef = useRef(null);
+
+  // mouse-tilt parallax across the depth layers
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const el = layersRef.current;
+    let raf;
+    let tx = 0;
+    let ty = 0;
+    let cx = 0;
+    let cy = 0;
+    const onMove = (e) => {
+      tx = (e.clientX / window.innerWidth - 0.5) * 2;
+      ty = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+    const tick = () => {
+      cx += (tx - cx) * 0.06;
+      cy += (ty - cy) * 0.06;
+      const nodes = el?.children || [];
+      for (let i = 0; i < nodes.length; i++) {
+        const depth = Number(nodes[i].dataset.depth || 0);
+        nodes[i].style.transform = `translate3d(${(-cx * depth).toFixed(1)}px, ${(-cy * depth).toFixed(1)}px, 0)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    window.addEventListener('mousemove', onMove);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-center justify-center overflow-hidden">
-      {/* WebGL particle depth layer */}
+    <section
+      id="top"
+      data-tone="cyan"
+      className="relative flex min-h-[100svh] items-center justify-center overflow-hidden"
+    >
+      {/* WebGL particle depth layer (ripples toward the cursor) */}
       <div className="absolute inset-0">
         <Particles
           particleColors={['#3B5BFF', '#00E0FF', '#8B5CFF', '#EDEDF2']}
-          particleCount={220}
+          particleCount={240}
           particleSpread={12}
-          speed={0.08}
+          speed={0.09}
           particleBaseSize={90}
           moveParticlesOnHover
-          particleHoverFactor={1.4}
+          particleHoverFactor={2}
           alphaParticles
           sizeRandomness={1.2}
           className="!absolute inset-0"
         />
       </div>
 
-      {/* colored radial glow + grid */}
-      <div className="hero-radial pointer-events-none absolute inset-0" />
-      <div className="bg-grid pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(70%_60%_at_50%_40%,#000_20%,transparent_80%)]" />
+      {/* parallax depth layers (shift with mouse tilt) */}
+      <div ref={layersRef} className="pointer-events-none absolute inset-0">
+        <div data-depth="18" className="hero-radial absolute inset-[-10%]" />
+        <div
+          data-depth="40"
+          className="bg-grid absolute inset-[-10%] opacity-40 [mask-image:radial-gradient(70%_60%_at_50%_40%,#000_20%,transparent_80%)]"
+        />
+      </div>
+
+      {/* slow light-beam scanline */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="animate-scanline absolute inset-x-0 top-0 h-40"
+          style={{ background: 'linear-gradient(to bottom, transparent, rgba(0,224,255,0.06), transparent)' }}
+        />
+      </div>
 
       {/* content */}
       <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-5 text-center">
@@ -64,14 +100,8 @@ export default function Hero() {
           {t.hero.badge}
         </motion.div>
 
-        <h1 className="font-display text-[clamp(2.8rem,9vw,7rem)] font-semibold leading-[0.92] tracking-[-0.03em] text-fog">
-          <span className="block">
-            {staticWords.map((w, i) => (
-              <span key={i}>
-                <Word i={i}>{w}</Word>{' '}
-              </span>
-            ))}
-          </span>
+        <h1 className="animate-rgb-split font-display text-[clamp(2.8rem,9vw,7rem)] font-semibold leading-[0.92] tracking-[-0.03em] text-fog">
+          <RepelText text={t.hero.titleStatic} className="block" baseDelay={BASE + 0.15} />
           <span className="mt-1 block">
             <RotatingWord words={t.hero.rotating} />
           </span>

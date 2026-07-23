@@ -1,12 +1,13 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useI18n } from '../i18n';
+import Parallax from '../components/Parallax';
 
 export default function Footer() {
   const { t } = useI18n();
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/[0.06] bg-ink pt-16">
+    <footer data-tone="blue" className="relative overflow-hidden border-t border-white/[0.06] bg-ink pt-16">
       {/* animated gradient line */}
       <div className="absolute inset-x-0 top-0 h-px overflow-hidden">
         <div className="animate-shimmer-line h-full w-full"
@@ -63,11 +64,13 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* giant faded wordmark */}
+      {/* giant faded wordmark (subtle parallax drift) */}
       <div className="pointer-events-none select-none overflow-hidden">
-        <div className="translate-y-[30%] text-center font-display text-[24vw] font-bold leading-none tracking-tighter text-white/[0.02]">
-          HinIT
-        </div>
+        <Parallax speed={12}>
+          <div className="translate-y-[30%] text-center font-display text-[24vw] font-bold leading-none tracking-tighter text-white/[0.02]">
+            HinIT
+          </div>
+        </Parallax>
       </div>
     </footer>
   );

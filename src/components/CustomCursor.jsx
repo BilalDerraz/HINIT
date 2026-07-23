@@ -43,6 +43,13 @@ export default function CustomCursor() {
     };
     raf = requestAnimationFrame(render);
 
+    const tones = {
+      cyan: '#00E0FF',
+      violet: '#8B5CFF',
+      blue: '#3B5BFF',
+    };
+    let curTone = 'cyan';
+
     const onMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
@@ -55,6 +62,17 @@ export default function CustomCursor() {
         label.style.opacity = '1';
       } else {
         label.style.opacity = '0';
+      }
+      // per-section tone
+      const toneEl = e.target.closest('[data-tone]');
+      const tone = toneEl?.getAttribute('data-tone') || 'cyan';
+      if (tone !== curTone) {
+        curTone = tone;
+        const c = tones[tone] || tones.cyan;
+        dot.style.background = c;
+        dot.style.boxShadow = `0 0 10px 2px ${c}`;
+        ring.style.borderColor = c;
+        label.style.color = c;
       }
     };
     const onDown = () => (state.down = true);

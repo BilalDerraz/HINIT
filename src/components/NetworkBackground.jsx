@@ -64,7 +64,13 @@ export default function NetworkBackground() {
       mouse.active = true;
     };
     const onLeave = () => (mouse.active = false);
-    const onScroll = () => (scrollY = window.scrollY);
+    const onScroll = () => {
+      scrollY = window.scrollY;
+      const max = document.body.scrollHeight - window.innerHeight;
+      const p = max > 0 ? scrollY / max : 0;
+      // hue shifts as you travel the page; brightens through the middle
+      canvas.style.filter = `hue-rotate(${p * 120}deg) brightness(${1 + Math.sin(p * Math.PI) * 0.35})`;
+    };
 
     const LINK_DIST = 140;
     let raf;

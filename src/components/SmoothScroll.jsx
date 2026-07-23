@@ -8,6 +8,9 @@ gsap.registerPlugin(ScrollTrigger);
 let lenisInstance = null;
 export const getLenis = () => lenisInstance;
 
+// live scroll telemetry other components can read cheaply
+export const scrollState = { velocity: 0, progress: 0 };
+
 /**
  * Lenis smooth scroll wired into GSAP's ScrollTrigger so scrubbed
  * animations stay perfectly in sync with inertial scrolling.
@@ -25,7 +28,11 @@ export default function SmoothScroll({ children }) {
     });
     lenisInstance = lenis;
 
-    lenis.on('scroll', ScrollTrigger.update);
+    lenis.on('scroll', (e) => {
+      ScrollTrigger.update();
+      scrollState.velocity = e.velocity ?? 0;
+      scrollState.progress = e.progress ?? 0;
+    });
 
     const raf = (time) => {
       lenis.raf(time * 1000);
