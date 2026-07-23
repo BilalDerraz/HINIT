@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>HinIT — uw IT-zorgen nemen wij over · Beveiliging, beheer &amp; support</title>
+    <meta
+      name="description"
+      content="HinIT neemt uw IT-zorgen over: bescherming tegen hackers, virussen en nep-mails, plus beheer en support. Één vast team dat alles volgt, regelt en bewaakt. Bij incidenten reactie binnen 15 minuten, vaste prijs per maand."
+    />
+    <link rel="canonical" href="https://hinit.nl/" />
+    <meta name="theme-color" content="#0a0d1a" />
+
+    <!-- icons: the HinIT "H" mark. The full wordmark is 2.5:1, so it turns to
+         mush below ~64px — the mark is the only version that survives a 16px
+         browser tab. -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HinIT" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:title" content="HinIT — uw IT-zorgen nemen wij over" />
+    <meta
+      property="og:description"
+      content="HinIT zorgt dat u niet meer naar uw IT hoeft om te kijken. Één vast team dat alles volgt, regelt en bewaakt — en uw bedrijf beschermt tegen hackers, virussen en nep-mails."
+    />
+    <meta property="og:url" content="https://hinit.nl/" />
+    <meta property="og:image" content="https://hinit.nl/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="HinIT — uw IT-zorgen nemen wij over" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HinIT — uw IT-zorgen nemen wij over" />
+    <meta
+      name="twitter:description"
+      content="Uw IT-zorgen nemen wij over: bescherming tegen hackers, virussen en nep-mails, plus beheer en support. Bij incidenten reactie binnen 15 minuten."
+    />
+    <meta name="twitter:image" content="https://hinit.nl/og-image.png" />
+
+    <!-- Fonts are self-hosted (see src/fonts.css): no third-party request, no
+         extra handshake on the critical path. Preload the two latin faces the
+         first screenful always needs. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/space-grotesk-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+
+    <!-- structured data: helps Google show the business card / rich result.
+         The phone and email here (and in <noscript> below) mirror
+         src/lib/company.js — change them together. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "HinIT",
+        "description": "Beschermt bedrijven tegen hackers, virussen en nep-mails, en regelt beheer en support van hun IT. Nederland.",
+        "url": "https://hinit.nl/",
+        "logo": "https://hinit.nl/favicon-512.png",
+        "image": "https://hinit.nl/og-image.png",
+        "email": "info@hinit.nl",
+        "telephone": "+31684018864",
+        "areaServed": { "@type": "Country", "name": "Nederland" },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Amsterdam",
+          "addressCountry": "NL"
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "08:00",
+          "closes": "18:00"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="max-width: 40rem; margin: 4rem auto; padding: 0 1.25rem; font-family: system-ui, sans-serif; color: #eef1f8">
+        <h1 style="font-size: 1.5rem">HinIT — uw IT-zorgen nemen wij over</h1>
+        <p style="line-height: 1.6; color: #a6adc4">
+          Deze site heeft JavaScript nodig. Zet het aan, of neem rechtstreeks contact met ons op:
+          <a href="mailto:info@hinit.nl" style="color: #8aa4ff">info@hinit.nl</a> ·
+          <a href="tel:+31684018864" style="color: #8aa4ff">+31 6 84018864</a>.
+        </p>
+      </div>
+    </noscript>
+    <script>
+      // Apply the saved theme before first paint so there is no flash of the
+      // wrong colours. Mirrors the logic in src/theme.jsx — keep them in step.
+      (function () {
+        var t;
+        try {
+          var m = document.cookie.match(/(?:^|;\s*)hinit_theme=([^;]*)/);
+          if (m) t = decodeURIComponent(m[1]);
+        } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t =
+            window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', t === 'light' ? '#f2f4f9' : '#0a0d1a');
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

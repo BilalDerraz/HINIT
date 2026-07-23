@@ -1,0 +1,16 @@
+{
+  "name": "HinIT — uw IT-zorgen nemen wij over",
+  "short_name": "HinIT",
+  "description": "Beheer, beveiliging en support van IT voor groeiende bedrijven in Nederland.",
+  "lang": "nl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0d1a",
+  "theme_color": "#0a0d1a",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

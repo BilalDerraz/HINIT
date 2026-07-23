@@ -1,0 +1,6 @@
+# The old WordPress site that used to live here is gone; everything is now
+# served from Vercel as static files. Crawl the lot.
+User-agent: *
+Allow: /
+
+Sitemap: https://hinit.nl/sitemap.xml

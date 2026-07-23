@@ -1,0 +1,630 @@
+@import 'tailwindcss';
+@import './fonts.css';
+
+/* ============================================================
+   Design tokens
+   Dark is the default. Utilities (bg-ink, text-fog, …) read the
+   --color-* variables, so overriding them under [data-theme='light']
+   flips the whole UI automatically.
+
+   The palette is built around the logo blue (#3257D5). `brand` is that
+   exact blue and never moves — it is the mark. `accent` is the readable
+   sibling used for text and icons, and it *does* shift per theme so
+   contrast stays above WCAG AA on both backgrounds.
+   ============================================================ */
+@theme {
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* surfaces + text (dark defaults) */
+  --color-ink: #0a0d1a; /* page background */
+  --color-panel: #141928; /* raised card surface */
+  --color-raise: rgba(255, 255, 255, 0.05); /* subtle inset / chip surface */
+  --color-line: rgba(255, 255, 255, 0.11); /* hairline borders */
+  --color-fog: #eef1f8; /* primary text */
+  --color-mist: #a6adc4; /* secondary / muted text */
+
+  /* brand */
+  --color-brand: #3257d5; /* the logo blue — constant in both themes */
+  --color-accent: #8aa4ff; /* readable accent (dark default) */
+  --color-sky: #22b8e6;
+  --color-violet: #7b6cf0;
+
+  /* form errors. Tailwind's red-400 is fine on the dark panel but only
+     ~2.8:1 on white, so this shifts per theme like `accent` does. */
+  --color-danger: #f87171;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* extras that aren't Tailwind color utilities */
+:root,
+html[data-theme='dark'] {
+  --glass-bg: rgba(14, 18, 32, 0.7);
+  --card-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.75);
+  --accent-soft: rgba(50, 87, 213, 0.18);
+  --logo-color: #dfe6ff;
+  /* Service cards follow the theme like every other card. The per-service
+     accent is tuned for text on white, so on the dark panel it is mixed
+     towards white to stay readable; --card-wash is the strength of the
+     accent tint on the surface itself. */
+  --card-ink-mix: 44%;
+  --card-wash: 30%;
+  --card-pop-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.6);
+  --card-pop-shadow-hover: 0 26px 54px -18px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+html[data-theme='light'] {
+  --color-ink: #f2f4f9;
+  --color-panel: #ffffff;
+  --color-raise: rgba(18, 24, 48, 0.045);
+  --color-line: rgba(18, 24, 48, 0.13);
+  --color-fog: #0f1424;
+  --color-mist: #545c73;
+  --color-accent: #2a49b8; /* darker so it stays readable on white */
+  --color-danger: #c42b2b; /* >=4.5:1 on white */
+
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --card-shadow: 0 18px 44px -22px rgba(18, 24, 48, 0.3);
+  --accent-soft: rgba(50, 87, 213, 0.09);
+  --logo-color: #3257d5;
+  /* On the light page the cards are white on near-white, so they need a real
+     hairline and a real shadow or they dissolve into the background. */
+  --card-ink-mix: 100%; /* the accents are already tuned for white */
+  --card-wash: 15%;
+  --card-pop-shadow: 0 14px 34px -16px rgba(18, 24, 48, 0.3), 0 2px 6px -2px rgba(18, 24, 48, 0.07);
+  --card-pop-shadow-hover: 0 24px 48px -18px rgba(18, 24, 48, 0.36), 0 3px 10px -3px rgba(18, 24, 48, 0.1);
+  color-scheme: light;
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    /* keep anchor targets clear of the fixed header */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-fog);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  /* stop background scroll while the mobile menu is open */
+  body[data-lock='true'] {
+    overflow: hidden;
+  }
+
+  ::selection {
+    background: rgba(50, 87, 213, 0.28);
+    color: #fff;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* only show the ring for keyboard users, never on mouse clicks */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* ============================================================
+   Layout & type scale
+
+   One rhythm for the whole site. Before this the eight home sections used
+   four different heading clamps, three different bottom margins and four
+   different container widths, so nothing lined up between them. Sections
+   compose these instead of spelling out their own spacing.
+   ============================================================ */
+
+/* vertical rhythm */
+.section-y {
+  padding-block: clamp(4.5rem, 9vw, 8rem);
+}
+.section-y-sm {
+  padding-block: clamp(2.75rem, 6vw, 5rem);
+}
+.section-y-tight {
+  padding-block: clamp(2rem, 4vw, 3rem);
+}
+
+/* horizontal rhythm: one page gutter, two content measures */
+.container-page {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  max-width: 80rem;
+}
+.container-prose {
+  max-width: 58rem;
+}
+
+/* type scale — every heading on the site comes from one of these four */
+.type-display {
+  font-size: clamp(2.6rem, 9vw, 6.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+}
+.type-page {
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.022em;
+}
+.type-section {
+  font-size: clamp(1.9rem, 4.4vw, 3.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+.type-sub {
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+}
+.type-lead {
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+  line-height: 1.65;
+}
+
+/* the small uppercase label above a section title */
+.kicker {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--color-accent);
+}
+
+/* ---------- brand ---------- */
+
+/* The wordmark is a single-colour shape with a transparent knockout, so we
+   paint it with a mask instead of shipping one PNG per theme. */
+.logo-mark {
+  display: block;
+  /* height comes from a utility class; width follows the shipped art 800×317 */
+  width: auto;
+  aspect-ratio: 800 / 317;
+  background-color: var(--logo-color);
+  -webkit-mask: url('/logo.png') no-repeat center / contain;
+  mask: url('/logo.png') no-repeat center / contain;
+  transition: background-color 0.35s ease;
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, #3257d5 0%, #4a6fe3 45%, #22b8e6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+/* the gradient is too dark to read on the dark canvas — lift it there */
+html[data-theme='dark'] .text-gradient {
+  background: linear-gradient(100deg, #7d9bff 0%, #8aa4ff 45%, #4fd2f0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.bg-brand-gradient {
+  background: linear-gradient(100deg, #3257d5 0%, #4160dd 55%, #2f7fe0 100%);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--color-line);
+}
+
+/* ---------- client logos ---------- */
+
+/* Real client marks in the trust strip. Shown muted and monochrome so eight
+   different brands read as one quiet row; colour comes back on hover. A logo
+   without a dark variant is inverted on the dark theme (data-auto-dark), which
+   turns a dark single-colour mark light — supply `logoDark` for anything
+   multi-colour. */
+.client-logo {
+  filter: grayscale(1);
+  opacity: 0.72;
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
+.client-logo[data-auto-dark] {
+  filter: grayscale(1) invert(1) brightness(1.15);
+}
+@media (hover: hover) {
+  .client-logo:hover,
+  a:hover > .client-logo {
+    filter: none;
+    opacity: 1;
+  }
+  .client-logo[data-auto-dark]:hover,
+  a:hover > .client-logo[data-auto-dark] {
+    filter: invert(1) brightness(1.15);
+  }
+}
+
+/* ---------- per-service accent ---------- */
+
+/* Every accent in Services.jsx is tuned as text on a white card, so on the
+   dark theme it has to be lifted towards white before it can be used as ink.
+   Set --card-accent on a container, then use these inside it. */
+.accent-scope {
+  --card-ink: color-mix(in srgb, var(--card-accent, #3257d5) var(--card-ink-mix), #ffffff);
+}
+.accent-chip {
+  background: color-mix(in srgb, var(--card-ink, #3257d5) 16%, transparent);
+  color: var(--card-ink, #3257d5);
+}
+.accent-text {
+  color: var(--card-ink, #3257d5);
+}
+
+/* ---------- cards ---------- */
+
+/* Service cards.
+
+   They sit on the same surface as every other card on the site (--color-panel,
+   theme hairline, theme shadow); what makes them *service* cards is the
+   --card-accent each one carries, set per service in Services.jsx. That accent
+   drives a wash across the surface, the icon chip, the link and the border, so
+   the grid reads as six distinct services on every device and in both themes.
+   The cursor spotlight is an enhancement on top, never the only source of
+   colour. */
+.card-pop {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* The accent, pushed towards white on the dark theme so it stays readable
+     as text and as an icon; used as-is on the light theme. */
+  --card-ink: color-mix(in srgb, var(--card-accent, #3257d5) var(--card-ink-mix), #ffffff);
+  background-color: var(--color-panel);
+  background-image: radial-gradient(
+    130% 105% at 100% 0%,
+    color-mix(in srgb, var(--card-accent, #3257d5) var(--card-wash), transparent) 0%,
+    color-mix(in srgb, var(--card-accent, #3257d5) calc(var(--card-wash) / 2.6), transparent) 42%,
+    transparent 78%
+  );
+  color: var(--color-fog);
+  border: 1px solid color-mix(in srgb, var(--card-ink) 30%, var(--color-line));
+  box-shadow: var(--card-pop-shadow);
+  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo),
+    border-color 0.3s var(--ease-out-expo);
+}
+
+/* Explicit stacking inside the card: spotlight (1) under content (2) under the
+   lit hairline (3). Keeping every layer positive avoids the negative-z-index
+   trick, which only ever worked because .card-pop isolates itself. */
+.card-pop > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Only lift on devices that really hover. On touch, :hover sticks after a tap
+   and would leave a card floating until you tap elsewhere. */
+@media (hover: hover) and (pointer: fine) {
+  .card-pop:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--card-pop-shadow-hover);
+    border-color: color-mix(in srgb, var(--card-ink) 62%, transparent);
+  }
+}
+
+/* Touch feedback: a card is a link, so a tap should visibly acknowledge it. */
+.card-pop:active {
+  transform: scale(0.988);
+}
+
+/* The icon chip and the "read more" line, tinted per service. */
+.card-pop-chip {
+  background: color-mix(in srgb, var(--card-ink) 14%, transparent);
+  color: var(--card-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card-ink) 26%, transparent);
+}
+.card-pop-link {
+  color: var(--card-ink);
+}
+
+/* Cursor spotlight.
+   --mx/--my track the pointer inside the card and --spot carries the hue
+   picked from where the pointer sits across the grid; both are written from
+   JS. --spot-on fades the whole thing in and out. Touch devices never move a
+   pointer across the grid, so this simply stays at 0 there and the base wash
+   above carries the colour on its own. */
+.card-pop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--spot-on, 0);
+  /* JS repaints this every frame while the pointer moves, so the transition
+     only needs to smooth the jump back to 0 when it leaves the grid */
+  transition: opacity 0.2s ease;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--spot, #3257d5) 30%, transparent) 0%,
+    color-mix(in srgb, var(--spot, #3257d5) 11%, transparent) 45%,
+    transparent 72%
+  );
+}
+
+/* a hairline of the same colour, so the card reads as "lit" not just tinted */
+.card-pop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: var(--spot-on, 0);
+  transition: opacity 0.2s ease;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--spot, #3257d5) 42%, transparent);
+}
+
+/* The one card that breaks the pattern on purpose: the bento feature tile. */
+.card-pop-feature {
+  background: linear-gradient(140deg, #3257d5 0%, #3a5ee0 55%, #2f7fe0 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 18px 48px -16px rgba(50, 87, 213, 0.55);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-pop-feature:hover {
+    box-shadow: 0 28px 60px -18px rgba(50, 87, 213, 0.7);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+}
+/* on the gradient card a light wash reads better than a coloured one */
+.card-pop-feature::before {
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.07) 45%,
+    transparent 72%
+  );
+}
+.card-pop-feature::after {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+}
+
+/* neutral card that follows the theme */
+.card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--card-shadow);
+}
+
+/* ---------- motion ---------- */
+
+/* Entrance animations for content that is already on screen at load — the
+   header and the hero. Everything below the fold uses .reveal instead.
+   The reduced-motion block at the bottom of this file collapses all of these
+   to a single frame. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise-in {
+  animation: rise-in 0.6s var(--ease-out-expo) both;
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-80px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.drop-in {
+  animation: drop-in 0.6s var(--ease-out-expo) both;
+}
+
+/* Swapping a form for its confirmation. */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.panel-in {
+  animation: panel-in 0.35s var(--ease-out-expo) both;
+}
+
+/* Collapsible region (the FAQ answers).
+   grid-template-rows 0fr -> 1fr animates to the content's natural height, which
+   `height: auto` cannot do. The child needs overflow:hidden for the clip. */
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.3s var(--ease-out-expo), opacity 0.25s ease;
+}
+.collapse > * {
+  overflow: hidden;
+}
+.collapse[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+/* Scroll reveal. <Reveal> adds .reveal, then .is-in once the element has been
+   seen (see components/useInView.js). Keep the two in step: without these
+   rules every reveal would simply never animate. */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 16px));
+  transition: opacity 0.55s var(--ease-out-expo), transform 0.55s var(--ease-out-expo);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Safety net: if scripting or IntersectionObserver never marks an element as
+   seen, content must still be readable rather than invisible forever. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s !important;
+  }
+}
+
+/* ---------- form controls ---------- */
+input,
+textarea,
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* the date grid and slot buttons share this hit-target floor on touch */
+.tap {
+  min-height: 44px;
+}
+
+/* ---------- scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 20px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-mist);
+}
+
+/* hide scrollbars on the horizontal chip rails while keeping them scrollable */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- print ----------
+   Mostly for the privacy and cookie statements: people do print those, and a
+   dark page with a fixed nav floating over the first paragraph is not what
+   should come out of the printer. */
+@media print {
+  :root,
+  html[data-theme='dark'],
+  html[data-theme='light'] {
+    --color-ink: #ffffff;
+    --color-panel: #ffffff;
+    --color-fog: #000000;
+    --color-mist: #333333;
+    --color-line: #cccccc;
+    --card-shadow: none;
+    --card-pop-shadow: none;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* the fixed header, the canvas backdrop and the skip link have no business
+     on paper */
+  header,
+  canvas,
+  .no-print {
+    display: none !important;
+  }
+
+  .section-y,
+  .section-y-sm {
+    padding-block: 1rem;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  .card,
+  .card-pop {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+
+  /* spell out where a link actually goes */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #555;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
