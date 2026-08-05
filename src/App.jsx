@@ -1,11 +1,6 @@
 import { I18nProvider } from './i18n';
-import SmoothScroll from './components/SmoothScroll';
-import MotionSystems from './components/MotionSystems';
-import CustomCursor from './components/CustomCursor';
+import { ThemeProvider } from './theme';
 import NetworkBackground from './components/NetworkBackground';
-import AuroraField from './components/AuroraField';
-import Noise from './lib/reactbits/Noise';
-import Preloader from './components/Preloader';
 
 import Nav from './sections/Nav';
 import Hero from './sections/Hero';
@@ -20,22 +15,11 @@ import Footer from './sections/Footer';
 
 export default function App() {
   return (
-    <I18nProvider>
-      <Preloader />
-      <CustomCursor />
-      <MotionSystems />
+    <ThemeProvider>
+      <I18nProvider>
+        {/* the one animation we keep: the calm "constellation" network */}
+        <NetworkBackground />
 
-      {/* persistent living-infrastructure background layers */}
-      <AuroraField />
-      <NetworkBackground />
-
-      {/* cinematic overlays */}
-      <div className="animate-grain pointer-events-none fixed inset-0 z-[500] mix-blend-soft-light">
-        <Noise patternAlpha={13} patternRefreshInterval={3} />
-      </div>
-      <div className="vignette pointer-events-none fixed inset-0 z-[400]" />
-
-      <SmoothScroll>
         <div className="relative z-10">
           <Nav />
           <main>
@@ -50,7 +34,7 @@ export default function App() {
           </main>
           <Footer />
         </div>
-      </SmoothScroll>
-    </I18nProvider>
+      </I18nProvider>
+    </ThemeProvider>
   );
 }

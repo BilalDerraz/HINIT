@@ -1,21 +1,52 @@
 @import 'tailwindcss';
 
+/* ============================================================
+   Design tokens
+   Dark is the default. Utilities (bg-ink, text-fog, …) read the
+   --color-* variables, so overriding them under [data-theme='light']
+   flips the whole UI automatically.
+   ============================================================ */
 @theme {
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #0a0a0f;
-  --color-ink-2: #101018;
-  --color-panel: #12121c;
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-fog: #edeaf2;
-  --color-mist: #8a8aa0;
+  /* surfaces + text (dark defaults) */
+  --color-ink: #0a0a0f; /* page background */
+  --color-panel: #14141f; /* raised card surface */
+  --color-raise: rgba(255, 255, 255, 0.05); /* subtle inset / chip surface */
+  --color-line: rgba(255, 255, 255, 0.1); /* hairline borders */
+  --color-fog: #eef0f6; /* primary text */
+  --color-mist: #a2a7bd; /* secondary / muted text */
 
+  /* brand accents (shared by both themes) */
   --color-blue: #3b5bff;
   --color-cyan: #00e0ff;
   --color-violet: #8b5cff;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* extras that aren't Tailwind color utilities */
+:root,
+html[data-theme='dark'] {
+  --glass-bg: rgba(14, 14, 22, 0.62);
+  --card-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.7);
+  --accent-soft: rgba(59, 91, 255, 0.14);
+  color-scheme: dark;
+}
+
+html[data-theme='light'] {
+  --color-ink: #eef1f7;
+  --color-panel: #ffffff;
+  --color-raise: rgba(18, 22, 45, 0.04);
+  --color-line: rgba(18, 22, 45, 0.12);
+  --color-fog: #10131f;
+  --color-mist: #565d73;
+
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --card-shadow: 0 20px 50px -24px rgba(18, 22, 45, 0.28);
+  --accent-soft: rgba(59, 91, 255, 0.1);
+  color-scheme: light;
 }
 
 @layer base {
@@ -28,7 +59,7 @@
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -36,19 +67,11 @@
     color: var(--color-fog);
     font-family: var(--font-sans);
     overflow-x: hidden;
-    cursor: none;
-  }
-
-  /* keep native cursor on touch devices */
-  @media (hover: none), (pointer: coarse) {
-    body {
-      cursor: auto;
-    }
+    transition: background-color 0.4s ease, color 0.4s ease;
   }
 
   ::selection {
-    background: rgba(0, 224, 255, 0.25);
-    color: #fff;
+    background: rgba(59, 91, 255, 0.25);
   }
 
   h1,
@@ -57,24 +80,18 @@
   h4 {
     font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 0.95;
+    letter-spacing: -0.02em;
+    line-height: 1;
   }
 
-  /* Lenis */
-  html.lenis,
-  html.lenis body {
-    height: auto;
-  }
-  .lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-  }
-  .lenis.lenis-stopped {
-    overflow: hidden;
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-/* ---------- utilities ---------- */
+/* ---------- small set of utilities ---------- */
 .text-gradient {
   background: linear-gradient(100deg, #3b5bff 0%, #00e0ff 45%, #8b5cff 100%);
   -webkit-background-clip: text;
@@ -83,308 +100,70 @@
   color: transparent;
 }
 
-.bg-grid {
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-
 .glass {
-  background: rgba(16, 16, 24, 0.55);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   border: 1px solid var(--color-line);
 }
 
-.glow-blue {
-  box-shadow:
-    0 0 0 1px rgba(59, 91, 255, 0.4),
-    0 10px 40px -8px rgba(59, 91, 255, 0.55),
-    0 0 60px -12px rgba(0, 224, 255, 0.45);
+/* Service / feature cards — high-contrast so they clearly stand out.
+   White in both themes: pops on dark, lifts off the light-grey page. */
+.card-pop {
+  background: #ffffff;
+  color: #10131f;
+  box-shadow: 0 12px 34px -14px rgba(10, 12, 30, 0.4);
+  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo);
+}
+.card-pop:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 54px -18px rgba(10, 12, 30, 0.5);
+}
+.card-pop-feature {
+  background: linear-gradient(140deg, #3b5bff 0%, #6b4cff 55%, #8b5cff 100%);
+  color: #ffffff;
+  box-shadow: 0 18px 48px -16px rgba(59, 91, 255, 0.6);
 }
 
-.hero-radial {
-  background:
-    radial-gradient(60% 50% at 50% 0%, rgba(59, 91, 255, 0.18) 0%, transparent 70%),
-    radial-gradient(50% 40% at 80% 20%, rgba(139, 92, 255, 0.14) 0%, transparent 70%),
-    radial-gradient(45% 45% at 10% 30%, rgba(0, 224, 255, 0.1) 0%, transparent 70%);
+/* neutral card that follows the theme */
+.card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--card-shadow);
 }
 
-.vignette {
-  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+/* live status dot (kept — tiny, subtle) */
+@keyframes ping-soft {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.ping-dot {
+  animation: ping-soft 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 /* scrollbar */
 ::-webkit-scrollbar {
-  width: 9px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #060609;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(#3b5bff, #8b5cff);
+  background: var(--color-line);
   border-radius: 20px;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
-}
-
-/* Process cards: active step scales up + glows, inactive dim (toggled by GSAP) */
-.proc-card {
-  will-change: transform;
-}
-@media (min-width: 768px) {
-  .proc-card {
-    opacity: 0.45;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .proc-card.is-active {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-}
-.proc-card.is-active .proc-glow,
-.proc-card.is-active .proc-grad,
-.proc-card:hover .proc-grad {
-  opacity: 1;
-}
-
-@keyframes shimmer-line {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-.animate-shimmer-line {
-  background-size: 200% 100%;
-  animation: shimmer-line 6s linear infinite;
-}
-
-/* ============================================================
-   "ALWAYS ALIVE" — ambient loops + primitives
-   ============================================================ */
-
-/* scroll-velocity skew driven by a global CSS var set from Lenis */
-:root {
-  --skew-y: 0deg;
-  --vel-blur: 0px;
-}
-.vel-skew {
-  transform: skewY(var(--skew-y));
-  transition: transform 0.1s linear;
-  will-change: transform;
-}
-
-/* flowing aurora gradient mesh (global, never settles) */
-@keyframes aurora-flow {
-  0% {
-    transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1.25);
-  }
-  50% {
-    transform: translate3d(4%, 3%, 0) rotate(8deg) scale(1.35);
-  }
-  100% {
-    transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1.25);
-  }
-}
-.aurora-blob {
-  animation: aurora-flow 22s ease-in-out infinite;
-  will-change: transform;
-}
-
-/* rotating conic border */
-@property --bd-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes bd-spin {
-  to {
-    --bd-angle: 360deg;
-  }
-}
-.conic-border::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: conic-gradient(
-    from var(--bd-angle),
-    transparent 0deg,
-    rgba(0, 224, 255, 0) 40deg,
-    #00e0ff 90deg,
-    #8b5cff 150deg,
-    rgba(139, 92, 255, 0) 210deg,
-    transparent 360deg
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: bd-spin 6s linear infinite;
-  opacity: 0.35;
-  transition: opacity 0.5s ease;
-  pointer-events: none;
-}
-.conic-border:hover::before {
-  opacity: 1;
-  animation-duration: 3s;
-}
-
-/* light-beam / scanline sweep */
-@keyframes beam-sweep {
-  0% {
-    transform: translateX(-120%) skewX(-12deg);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.7;
-  }
-  80% {
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateX(120%) skewX(-12deg);
-    opacity: 0;
-  }
-}
-.animate-beam {
-  animation: beam-sweep 7s ease-in-out infinite;
-}
-@keyframes scanline {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.5;
-  }
-  90% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
-.animate-scanline {
-  animation: scanline 9s linear infinite;
-}
-
-/* grain shimmer */
-@keyframes grain-shimmer {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-.animate-grain {
-  animation: grain-shimmer 5s ease-in-out infinite;
-}
-
-/* idle float / breathing */
-@keyframes float-y {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-.animate-float {
-  animation: float-y var(--float-dur, 6s) ease-in-out infinite;
-  animation-delay: var(--float-delay, 0s);
-}
-
-/* radar / heartbeat ping ring */
-@keyframes radar-ping {
-  0% {
-    transform: scale(0.6);
-    opacity: 0.9;
-  }
-  100% {
-    transform: scale(2.6);
-    opacity: 0;
-  }
-}
-.animate-radar {
-  animation: radar-ping 2.6s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-}
-
-/* flowing gradient text */
-@keyframes text-flow {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
-  }
-}
-.text-gradient-flow {
-  background: linear-gradient(100deg, #3b5bff, #00e0ff, #8b5cff, #00e0ff, #3b5bff);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: text-flow 6s linear infinite;
-}
-
-/* RGB-split / liquid warp headline */
-@keyframes rgb-split {
-  0%,
-  100% {
-    text-shadow:
-      0.02em 0 0 rgba(0, 224, 255, 0.35),
-      -0.02em 0 0 rgba(139, 92, 255, 0.35);
-  }
-  50% {
-    text-shadow:
-      -0.02em 0 0 rgba(0, 224, 255, 0.4),
-      0.02em 0 0 rgba(255, 60, 120, 0.3);
-  }
-}
-.animate-rgb-split {
-  animation: rgb-split 4s ease-in-out infinite;
-}
-
-/* soft idle pulse for icons */
-@keyframes pulse-soft {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.09);
-    opacity: 1;
-  }
-}
-.animate-pulse-soft {
-  animation: pulse-soft 3.4s ease-in-out infinite;
-}
-
-/* conic sweep glow (used behind cards / CTA) */
-@keyframes spin-slow {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.animate-spin-slow {
-  animation: spin-slow 16s linear infinite;
 }

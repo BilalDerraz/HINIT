@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+import { Sun, Moon } from 'lucide-react';
 import { useI18n } from '../i18n';
+import { useTheme } from '../theme';
 import CTAButton from '../components/CTAButton';
 
 function Logo() {
   return (
-    <a href="#top" data-cursor="Naar boven" className="flex items-center gap-2.5">
+    <a href="#top" className="flex items-center gap-2.5">
       <span className="relative flex h-8 w-8 items-center justify-center">
         <svg viewBox="0 0 32 32" className="h-8 w-8">
           <defs>
@@ -39,6 +41,7 @@ function Logo() {
 
 export default function Nav() {
   const { t, lang, toggle } = useI18n();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -60,12 +63,12 @@ export default function Nav() {
     <motion.header
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 1.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="fixed inset-x-0 top-0 z-[900] flex justify-center px-4 pt-3 sm:pt-4"
     >
       <nav
-        className={`flex w-full max-w-6xl items-center justify-between rounded-full px-4 py-2.5 transition-all duration-500 sm:px-5 ${
-          scrolled ? 'glass shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]' : 'border border-transparent'
+        className={`flex w-full max-w-6xl items-center justify-between rounded-full px-4 py-2.5 transition-all duration-300 sm:px-5 ${
+          scrolled ? 'glass shadow-[0_8px_40px_-12px_rgba(0,0,0,0.35)]' : 'border border-transparent'
         }`}
       >
         <Logo />
@@ -84,11 +87,20 @@ export default function Nav() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-raise text-fog transition-colors hover:text-blue"
+            aria-label={theme === 'dark' ? t.theme.toLight : t.theme.toDark}
+            title={theme === 'dark' ? t.theme.toLight : t.theme.toDark}
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" strokeWidth={1.8} /> : <Moon className="h-4 w-4" strokeWidth={1.8} />}
+          </button>
+
           {/* NL / EN toggle */}
           <button
             onClick={toggle}
-            data-cursor={lang === 'nl' ? 'English' : 'Nederlands'}
-            className="relative flex items-center rounded-full border border-white/10 bg-white/[0.03] p-0.5 text-[11px] font-medium"
+            className="relative flex items-center rounded-full border border-line bg-raise p-0.5 text-[11px] font-medium"
             aria-label="Language toggle"
           >
             <span className={`relative z-10 rounded-full px-2.5 py-1 transition-colors ${lang === 'nl' ? 'text-white' : 'text-mist'}`}>
@@ -107,7 +119,7 @@ export default function Nav() {
           </button>
 
           <div className="hidden sm:block">
-            <CTAButton href="#contact" cursor="Boek nu" className="px-5 py-2.5 text-[13px]">
+            <CTAButton href="#contact" className="px-5 py-2.5 text-[13px]">
               {t.nav.cta}
             </CTAButton>
           </div>
@@ -115,7 +127,7 @@ export default function Nav() {
           {/* mobile menu button */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-raise lg:hidden"
             aria-label="Menu"
           >
             <div className="flex flex-col gap-1">
@@ -130,7 +142,7 @@ export default function Nav() {
       <motion.div
         initial={false}
         animate={open ? { opacity: 1, y: 0, pointerEvents: 'auto' } : { opacity: 0, y: -10, pointerEvents: 'none' }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
         className="glass absolute top-[68px] left-4 right-4 rounded-3xl p-4 lg:hidden"
       >
         <div className="flex flex-col">
@@ -139,7 +151,7 @@ export default function Nav() {
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="border-b border-white/5 py-3 text-base text-fog last:border-0"
+              className="border-b border-line py-3 text-base text-fog last:border-0"
             >
               {l.label}
             </a>
@@ -147,7 +159,7 @@ export default function Nav() {
           <a
             href="#contact"
             onClick={() => setOpen(false)}
-            className="mt-3 rounded-full py-3 text-center text-sm font-medium text-white glow-blue"
+            className="mt-3 rounded-full py-3 text-center text-sm font-medium text-white"
             style={{ background: 'linear-gradient(100deg,#3B5BFF,#00E0FF,#8B5CFF)' }}
           >
             {t.nav.cta}
