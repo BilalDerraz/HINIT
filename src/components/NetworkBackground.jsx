@@ -12,12 +12,15 @@ export default function NetworkBackground() {
   const { theme } = useTheme();
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
     let width = 0;
     let height = 0;
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let raf = 0;
 
     const mouse = { x: -9999, y: -9999, active: false };
 
@@ -25,23 +28,25 @@ export default function NetworkBackground() {
     const palette =
       theme === 'light'
         ? [
-            [59, 91, 255],
-            [99, 76, 240],
+            [50, 87, 213],
+            [47, 110, 200],
             [8, 145, 178],
           ]
         : [
-            [59, 91, 255],
-            [0, 224, 255],
-            [139, 92, 255],
+            [90, 125, 245],
+            [34, 184, 230],
+            [123, 108, 240],
           ];
-    const lineAlpha = theme === 'light' ? 0.28 : 0.4;
-    const nodeAlpha = theme === 'light' ? 0.55 : 0.8;
+    const lineAlpha = theme === 'light' ? 0.26 : 0.38;
+    const nodeAlpha = theme === 'light' ? 0.55 : 0.75;
     canvas.style.opacity = theme === 'light' ? '0.5' : '0.55';
 
     let nodes = [];
     const build = () => {
       const area = width * height;
-      const count = Math.min(70, Math.max(28, Math.floor(area / 26000)));
+      // fewer nodes on small screens: the effect still reads and phones stay cool
+      const cap = width < 640 ? 34 : 70;
+      const count = Math.min(cap, Math.max(22, Math.floor(area / 26000)));
       nodes = new Array(count).fill(0).map(() => {
         const c = palette[Math.floor(Math.random() * palette.length)];
         return {
@@ -56,8 +61,13 @@ export default function NetworkBackground() {
     };
 
     const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
+      // Use the visual viewport width, not innerWidth, so the mobile browser
+      // chrome sliding away doesn't force a full rebuild on every scroll.
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (w === width && Math.abs(h - height) < 120) return;
+      width = w;
+      height = h;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -72,12 +82,13 @@ export default function NetworkBackground() {
       mouse.y = e.clientY;
       mouse.active = true;
     };
-    const onLeave = () => (mouse.active = false);
+    const onLeave = () => {
+      mouse.active = false;
+    };
 
     const LINK_DIST = 150;
-    let raf;
 
-    const draw = () => {
+    const render = () => {
       ctx.clearRect(0, 0, width, height);
 
       for (let i = 0; i < nodes.length; i++) {
@@ -90,9 +101,10 @@ export default function NetworkBackground() {
           const dy = mouse.y - n.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < 180 * 180) {
-            const f = (1 - Math.sqrt(d2) / 180) * 0.25;
-            n.x += (dx / (Math.sqrt(d2) || 1)) * f;
-            n.y += (dy / (Math.sqrt(d2) || 1)) * f;
+            const d = Math.sqrt(d2) || 1;
+            const f = (1 - d / 180) * 0.25;
+            n.x += (dx / d) * f;
+            n.y += (dy / d) * f;
           }
         }
 
@@ -132,27 +144,49 @@ export default function NetworkBackground() {
         ctx.fillStyle = `rgba(${r},${g},${bl},${nodeAlpha})`;
         ctx.fill();
       }
-
-      raf = requestAnimationFrame(draw);
     };
 
+    const loop = () => {
+      render();
+      raf = requestAnimationFrame(loop);
+    };
+
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    const start = () => {
+      if (raf || reduceMotion.matches || document.hidden) return;
+      raf = requestAnimationFrame(loop);
+    };
+
+    // Reduced motion gets a single static frame — the texture without the drift.
+    const applyMotionPreference = () => {
+      stop();
+      if (reduceMotion.matches) render();
+      else start();
+    };
+
+    // Don't burn battery animating a tab nobody is looking at.
+    const onVisibility = () => (document.hidden ? stop() : applyMotionPreference());
+
     resize();
+    applyMotionPreference();
+
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseout', onLeave);
-
-    if (prefersReduced) {
-      draw();
-      cancelAnimationFrame(raf);
-    } else {
-      raf = requestAnimationFrame(draw);
-    }
+    document.addEventListener('visibilitychange', onVisibility);
+    reduceMotion.addEventListener('change', applyMotionPreference);
 
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseout', onLeave);
+      document.removeEventListener('visibilitychange', onVisibility);
+      reduceMotion.removeEventListener('change', applyMotionPreference);
     };
   }, [theme]);
 

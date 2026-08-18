@@ -8,12 +8,12 @@ export default function WhyHinIT() {
   const { t } = useI18n();
 
   return (
-    <section id="why" className="relative py-24 sm:py-32">
+    <section id="why" className="relative py-20 sm:py-28 lg:py-32">
       <div className="relative mx-auto max-w-7xl px-5">
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
           <div>
             <Reveal>
-              <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-[0.3em] text-blue">
+              <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-[0.3em] text-accent">
                 {t.why.kicker}
               </span>
             </Reveal>
@@ -28,13 +28,13 @@ export default function WhyHinIT() {
           </Reveal>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
           {t.why.pillars.map((p, i) => {
             const Icon = pillarIcons[i];
             return (
               <Reveal key={p.t} delay={i * 0.06}>
-                <div className="card h-full rounded-3xl p-7 transition-transform duration-300 hover:-translate-y-1">
-                  <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue/10 text-blue">
+                <div className="card h-full rounded-3xl p-6 transition-transform duration-300 hover:-translate-y-1 sm:p-7">
+                  <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/10 text-accent">
                     <Icon className="h-5 w-5" strokeWidth={1.8} />
                   </div>
                   <div className="mb-1 font-display text-2xl font-semibold text-mist/40">0{i + 1}</div>

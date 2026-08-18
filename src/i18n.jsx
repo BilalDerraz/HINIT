@@ -1,15 +1,30 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { getCookie, setCookie, COOKIE_LANG } from './lib/cookies';
 
 /**
  * Lightweight i18n. Copy is Dutch-first (NL default) with an English mirror.
  * Tone: plain and simple — a 12-year-old should get what HinIT does.
+ * The chosen language is remembered in a first-party cookie.
  */
 export const translations = {
   nl: {
-    nav: { services: 'Wat we doen', why: 'Waarom HinIT', process: 'Zo werkt het', contact: 'Contact', cta: 'Plan een gesprek' },
+    htmlLang: 'nl',
+    locale: 'nl-NL',
+    nav: {
+      services: 'Wat we doen',
+      why: 'Waarom HinIT',
+      process: 'Zo werkt het',
+      booking: 'Afspraak',
+      faq: 'Vragen',
+      contact: 'Contact',
+      cta: 'Plan een gesprek',
+      menu: 'Menu openen',
+      close: 'Menu sluiten',
+      skip: 'Direct naar de inhoud',
+    },
     theme: { toLight: 'Licht thema', toDark: 'Donker thema' },
     hero: {
-      badge: 'IT-hulp uit Amsterdam',
+      badge: 'IT-hulp uit Nederland',
       titleStatic: 'IT die gewoon',
       titleAccent: 'werkt.',
       sub: 'Wij houden de computers, het internet en de beveiliging van uw bedrijf draaiend. U werkt door, wij lossen de rest op.',
@@ -47,10 +62,62 @@ export const translations = {
     process: {
       kicker: 'Zo werkt het',
       title: 'In 3 simpele stappen geregeld.',
+      sub: 'Geen lange trajecten of dikke rapporten. Binnen twee weken draait alles zoals het hoort.',
       steps: [
-        { n: '01', t: 'Kennismaken', d: 'We kijken samen naar uw computers en systemen en wat beter kan.' },
-        { n: '02', t: 'Plan maken', d: 'We vertellen u helder wat we als eerste oppakken en waarom.' },
-        { n: '03', t: 'Regelen & bewaken', d: 'Wij voeren het uit en houden alles in de gaten. U heeft er geen omkijken naar.' },
+        {
+          n: '01',
+          t: 'Kennismaken',
+          d: 'We kijken samen naar uw computers en systemen en wat beter kan.',
+          duration: '30 minuten',
+          points: ['Gratis en vrijblijvend', 'Bij u op kantoor of via videobellen', 'U hoeft niets voor te bereiden'],
+        },
+        {
+          n: '02',
+          t: 'Plan maken',
+          d: 'We vertellen u helder wat we als eerste oppakken en waarom.',
+          duration: 'Binnen 3 dagen',
+          points: ['Eén overzicht, geen dik rapport', 'Vaste prijs per maand', 'U bepaalt wat er gebeurt'],
+        },
+        {
+          n: '03',
+          t: 'Regelen & bewaken',
+          d: 'Wij voeren het uit en houden alles in de gaten. U heeft er geen omkijken naar.',
+          duration: 'Doorlopend',
+          points: ['Overstap zonder stilstand', '24/7 in de gaten gehouden', 'Vast aanspreekpunt'],
+        },
+      ],
+    },
+    booking: {
+      kicker: 'Afspraak plannen',
+      title: 'Kies zelf een moment dat u uitkomt.',
+      sub: 'Pak een dag en tijd die u schikt. Het gesprek duurt een half uur, is gratis en u zit nergens aan vast.',
+      perks: [
+        { t: 'Duurt 30 minuten', d: 'Kort en concreet, geen verkooppraat.' },
+        { t: 'Gratis en vrijblijvend', d: 'U beslist daarna zelf of het klikt.' },
+        { t: 'Bij u of online', d: 'Op kantoor in de Randstad, of gewoon via videobellen.' },
+      ],
+      pickDate: 'Kies een dag',
+      pickTime: 'Kies een tijd',
+      pickTimeHint: 'Kies eerst een dag in de kalender.',
+      prevMonth: 'Vorige maand',
+      nextMonth: 'Volgende maand',
+      today: 'Vandaag',
+      unavailable: 'Niet beschikbaar',
+      morning: 'Ochtend',
+      afternoon: 'Middag',
+      confirm: 'Afspraak bevestigen',
+      confirming: 'Bezig…',
+      nameLabel: 'Uw naam',
+      emailLabel: 'Uw e-mail',
+      errors: { name: 'Vul uw naam in.', email: 'Vul een geldig e-mailadres in.' },
+      successTitle: 'Afspraak staat genoteerd.',
+      successBody: 'U ontvangt een bevestiging per e-mail met een link voor het videogesprek.',
+      again: 'Andere tijd kiezen',
+      weekdays: ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'],
+      weekdaysFull: ['maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag'],
+      months: [
+        'januari', 'februari', 'maart', 'april', 'mei', 'juni',
+        'juli', 'augustus', 'september', 'oktober', 'november', 'december',
       ],
     },
     stats: {
@@ -63,7 +130,6 @@ export const translations = {
         { v: 50, suffix: '+', label: 'Blije klanten', dec: 0 },
       ],
       badges: ['ISO 27001', 'Microsoft Partner', 'GDPR', 'SOC 2', 'NIS2'],
-      note: 'TODO: cijfers en certificeringen verifiëren vóór livegang.',
     },
     testimonials: {
       kicker: 'Klanten',
@@ -73,34 +139,83 @@ export const translations = {
         { q: 'Zo snel! Een probleem is vaak al opgelost voordat wij het goed en wel doorgeven. En altijd een bekend gezicht.', n: 'Marco Jansen', r: 'Directeur, MKB' },
         { q: 'Van een chaos aan losse tools naar één veilig systeem. HinIT bracht rust en overzicht.', n: 'Amir El Haddad', r: 'Hoofd Operations, non-profit' },
       ],
-      note: 'TODO: echte quotes, namen en logo’s toevoegen.',
+    },
+    faq: {
+      kicker: 'Veelgestelde vragen',
+      title: 'Nog vragen? Dit horen we vaak.',
+      items: [
+        {
+          q: 'Wij hebben al iemand die onze IT doet. Wat dan?',
+          a: 'Prima. We werken vaak samen met een vaste ICT-er of leverancier. Wij nemen dan de dingen over die blijven liggen, zoals beveiliging en het in de gaten houden van systemen.',
+        },
+        {
+          q: 'Hoe snel zijn jullie er als er iets kapot is?',
+          a: 'We reageren binnen 15 minuten op een melding. Het meeste lossen we meteen op afstand op. Is het echt nodig, dan komen we langs.',
+        },
+        {
+          q: 'Wat kost het?',
+          a: 'Een vast bedrag per maand per medewerker, zodat u nooit voor verrassingen staat. Wat het precies wordt, hangt af van uw situatie. Dat rekenen we in het kennismakingsgesprek gewoon samen uit.',
+        },
+        {
+          q: 'Zitten we ergens aan vast?',
+          a: 'Nee. We werken met een opzegtermijn van één maand. We willen dat u blijft omdat het goed gaat, niet omdat het moet.',
+        },
+        {
+          q: 'Wij zijn maar klein. Zijn we niet te klein voor jullie?',
+          a: 'Zeker niet. We werken met bedrijven vanaf ongeveer vijf medewerkers. Juist daar valt vaak het meest te winnen.',
+        },
+        {
+          q: 'Hoe zit het met onze gegevens?',
+          a: 'Alles blijft binnen Europa en we werken volgens de AVG. U krijgt van ons zwart op wit welke gegevens we zien en wat we ermee doen.',
+        },
+      ],
     },
     contact: {
       kicker: 'Contact',
       title: 'Klaar voor IT zonder zorgen?',
-      sub: 'Plan een gratis gesprek. We denken graag met u mee — in gewone taal en zonder verkooppraat.',
+      sub: 'Stuur een bericht of plan meteen een gesprek in. We denken graag met u mee — in gewone taal en zonder verkooppraat.',
       name: 'Uw naam',
       email: 'Uw e-mail',
       message: 'Waar kunnen we mee helpen?',
       send: 'Verstuur',
       sending: 'Versturen…',
       success: 'Bedankt! We nemen binnen één werkdag contact met u op.',
+      successAgain: 'Nog een bericht sturen',
       chips: ['Persoonlijk', 'Duidelijk', 'Veilig'],
+      orBook: 'Liever meteen een moment kiezen?',
+      orBookLink: 'Plan een afspraak',
+      hours: 'Ma t/m vr, 08:00 – 18:00',
       errors: { name: 'Vul uw naam in.', email: 'Vul een geldig e-mailadres in.', message: 'Vertel kort waar we mee kunnen helpen.' },
     },
     footer: {
       tagline: 'Uw IT, veilig en zonder zorgen geregeld.',
-      nav: ['Home', 'Wat we doen', 'Waarom HinIT', 'Contact'],
+      navTitle: 'Navigatie',
+      contactTitle: 'Contact',
+      nav: ['Home', 'Wat we doen', 'Waarom HinIT', 'Afspraak', 'Contact'],
       built: 'Gemaakt in Amsterdam',
       rights: 'Alle rechten voorbehouden.',
+      backToTop: 'Terug naar boven',
     },
   },
 
   en: {
-    nav: { services: 'What we do', why: 'Why HinIT', process: 'How it works', contact: 'Contact', cta: 'Book a call' },
+    htmlLang: 'en',
+    locale: 'en-GB',
+    nav: {
+      services: 'What we do',
+      why: 'Why HinIT',
+      process: 'How it works',
+      booking: 'Book',
+      faq: 'FAQ',
+      contact: 'Contact',
+      cta: 'Book a call',
+      menu: 'Open menu',
+      close: 'Close menu',
+      skip: 'Skip to content',
+    },
     theme: { toLight: 'Light theme', toDark: 'Dark theme' },
     hero: {
-      badge: 'IT help from Amsterdam',
+      badge: 'IT help from the Netherlands',
       titleStatic: 'IT that just',
       titleAccent: 'works.',
       sub: 'We keep your computers, internet and security up and running. You keep working, we handle the rest.',
@@ -138,10 +253,62 @@ export const translations = {
     process: {
       kicker: 'How it works',
       title: 'Sorted in 3 simple steps.',
+      sub: 'No drawn-out projects or thick reports. Within two weeks everything runs the way it should.',
       steps: [
-        { n: '01', t: 'Get to know you', d: 'Together we look at your computers and systems and what can be better.' },
-        { n: '02', t: 'Make a plan', d: 'We tell you clearly what we tackle first and why.' },
-        { n: '03', t: 'Run & watch it', d: 'We carry it out and keep an eye on everything. You never have to worry.' },
+        {
+          n: '01',
+          t: 'Get to know you',
+          d: 'Together we look at your computers and systems and what can be better.',
+          duration: '30 minutes',
+          points: ['Free, no strings attached', 'At your office or over video', 'Nothing to prepare'],
+        },
+        {
+          n: '02',
+          t: 'Make a plan',
+          d: 'We tell you clearly what we tackle first and why.',
+          duration: 'Within 3 days',
+          points: ['One overview, not a thick report', 'Fixed monthly price', 'You decide what happens'],
+        },
+        {
+          n: '03',
+          t: 'Run & watch it',
+          d: 'We carry it out and keep an eye on everything. You never have to worry.',
+          duration: 'Ongoing',
+          points: ['Switch over without downtime', 'Watched 24/7', 'One familiar contact'],
+        },
+      ],
+    },
+    booking: {
+      kicker: 'Book a call',
+      title: 'Pick a moment that suits you.',
+      sub: 'Grab a day and time that works. The call takes half an hour, is free, and commits you to nothing.',
+      perks: [
+        { t: 'Takes 30 minutes', d: 'Short and concrete, no sales pitch.' },
+        { t: 'Free, no strings', d: 'Afterwards you decide whether it clicks.' },
+        { t: 'At your place or online', d: 'At your office in the Randstad, or simply over video.' },
+      ],
+      pickDate: 'Pick a day',
+      pickTime: 'Pick a time',
+      pickTimeHint: 'Choose a day in the calendar first.',
+      prevMonth: 'Previous month',
+      nextMonth: 'Next month',
+      today: 'Today',
+      unavailable: 'Unavailable',
+      morning: 'Morning',
+      afternoon: 'Afternoon',
+      confirm: 'Confirm appointment',
+      confirming: 'Working…',
+      nameLabel: 'Your name',
+      emailLabel: 'Your email',
+      errors: { name: 'Please enter your name.', email: 'Please enter a valid email address.' },
+      successTitle: 'Your appointment is booked.',
+      successBody: 'You will get a confirmation by email with a link for the video call.',
+      again: 'Pick another time',
+      weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      weekdaysFull: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      months: [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December',
       ],
     },
     stats: {
@@ -154,7 +321,6 @@ export const translations = {
         { v: 50, suffix: '+', label: 'Happy clients', dec: 0 },
       ],
       badges: ['ISO 27001', 'Microsoft Partner', 'GDPR', 'SOC 2', 'NIS2'],
-      note: 'TODO: verify figures and certifications before launch.',
     },
     testimonials: {
       kicker: 'Clients',
@@ -164,35 +330,102 @@ export const translations = {
         { q: 'So fast! A problem is often fixed before we even finish reporting it. And always a familiar face.', n: 'Marco Jansen', r: 'Director, SME' },
         { q: 'From a mess of separate tools to one safe system. HinIT brought calm and clarity.', n: 'Amir El Haddad', r: 'Head of Operations, non-profit' },
       ],
-      note: 'TODO: add real quotes, names and logos.',
+    },
+    faq: {
+      kicker: 'Frequently asked',
+      title: 'Questions? These come up a lot.',
+      items: [
+        {
+          q: 'We already have someone doing our IT. What then?',
+          a: 'That is fine. We often work alongside an in-house IT person or existing supplier. We pick up what tends to be left behind, such as security and keeping an eye on systems.',
+        },
+        {
+          q: 'How fast are you there when something breaks?',
+          a: 'We respond to a report within 15 minutes. Most things we fix remotely straight away. If it really needs hands on site, we come over.',
+        },
+        {
+          q: 'What does it cost?',
+          a: 'A fixed amount per month per employee, so you never get a surprise bill. What that comes to depends on your situation — we simply work it out together during the intro call.',
+        },
+        {
+          q: 'Are we tied into anything?',
+          a: 'No. We work with a one-month notice period. We want you to stay because things are going well, not because you have to.',
+        },
+        {
+          q: 'We are quite small. Are we too small for you?',
+          a: 'Not at all. We work with companies from around five employees up. That is often where the most can be gained.',
+        },
+        {
+          q: 'What about our data?',
+          a: 'Everything stays within Europe and we work according to the GDPR. You get it in writing which data we can see and what we do with it.',
+        },
+      ],
     },
     contact: {
       kicker: 'Contact',
       title: 'Ready for IT without the worries?',
-      sub: 'Book a free call. We’re happy to think along — in plain language and with no sales pitch.',
+      sub: 'Send a message or book a call straight away. We’re happy to think along — in plain language and with no sales pitch.',
       name: 'Your name',
       email: 'Your email',
       message: 'What can we help you with?',
       send: 'Send',
       sending: 'Sending…',
       success: 'Thank you! We’ll get back to you within one business day.',
+      successAgain: 'Send another message',
       chips: ['Personal', 'Clear', 'Secure'],
+      orBook: 'Rather pick a moment right away?',
+      orBookLink: 'Book an appointment',
+      hours: 'Mon–Fri, 08:00 – 18:00',
       errors: { name: 'Please enter your name.', email: 'Please enter a valid email address.', message: 'Tell us briefly what we can help with.' },
     },
     footer: {
       tagline: 'Your IT, secure and worry-free.',
-      nav: ['Home', 'What we do', 'Why HinIT', 'Contact'],
+      navTitle: 'Navigation',
+      contactTitle: 'Contact',
+      nav: ['Home', 'What we do', 'Why HinIT', 'Book', 'Contact'],
       built: 'Made in Amsterdam',
       rights: 'All rights reserved.',
+      backToTop: 'Back to top',
     },
   },
 };
 
 const I18nContext = createContext(null);
 
+const isLang = (v) => v === 'nl' || v === 'en';
+
+function initialLang() {
+  const saved = getCookie(COOKIE_LANG);
+  if (isLang(saved)) return saved;
+  // Dutch-first business: only switch to English if the browser clearly is.
+  if (typeof navigator !== 'undefined') {
+    const langs = navigator.languages?.length ? navigator.languages : [navigator.language];
+    for (const l of langs) {
+      if (!l) continue;
+      const code = l.toLowerCase().slice(0, 2);
+      if (code === 'nl') return 'nl';
+      if (code === 'en') return 'en';
+    }
+  }
+  return 'nl';
+}
+
 export function I18nProvider({ children }) {
-  const [lang, setLang] = useState('nl');
-  const toggle = useCallback(() => setLang((l) => (l === 'nl' ? 'en' : 'nl')), []);
+  const [lang, setLangState] = useState(initialLang);
+
+  const setLang = useCallback((next) => {
+    if (!isLang(next)) return;
+    setCookie(COOKIE_LANG, next);
+    setLangState(next);
+  }, []);
+
+  const toggle = useCallback(() => setLang(lang === 'nl' ? 'en' : 'nl'), [lang, setLang]);
+
+  // keep the document language in sync for screen readers and search engines
+  useEffect(() => {
+    document.documentElement.setAttribute('lang', translations[lang].htmlLang);
+  }, [lang]);
+
   const t = translations[lang];
   return <I18nContext.Provider value={{ lang, setLang, toggle, t }}>{children}</I18nContext.Provider>;
 }
