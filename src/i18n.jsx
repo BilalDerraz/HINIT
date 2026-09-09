@@ -20,6 +20,144 @@ export const translations = {
       description:
         'HinIT regelt de computers, het internet en de beveiliging van uw bedrijf. Vast team, reactie binnen 15 minuten, vaste prijs per maand. Plan een gratis kennismaking.',
     },
+    /* ------------------------------------------------------------------
+       Legal pages. Written against what this site actually does: two
+       functional cookies, no analytics, no third-party requests (the fonts
+       are self-hosted), and forms that either POST to VITE_FORM_ENDPOINT or
+       hand the message to the visitor's own mail client. Keep them in step
+       with the code — a privacy statement that describes something the site
+       does not do is worse than none.
+       ------------------------------------------------------------------ */
+    legal: {
+      updatedLabel: 'Laatst bijgewerkt',
+      updated: '2026-09-09',
+      backHome: 'Terug naar de homepage',
+      toc: 'Op deze pagina',
+      privacy: {
+        nav: 'Privacyverklaring',
+        title: 'Privacyverklaring',
+        lead: 'Deze verklaring legt uit welke persoonsgegevens HinIT verwerkt als u deze website bezoekt of contact met ons opneemt, waarom we dat doen en wat uw rechten zijn.',
+        meta: 'Welke gegevens HinIT verwerkt, waarom, hoe lang we ze bewaren en welke rechten u heeft.',
+        sections: [
+          {
+            h: 'Wie is verantwoordelijk',
+            body: [
+              'HinIT is verantwoordelijk voor de verwerking van persoonsgegevens zoals beschreven op deze pagina. U bereikt ons op info@hinit.nl of +31 6 84018864. Ons werkgebied is Nederland; we zitten in Amsterdam.',
+            ],
+          },
+          {
+            h: 'Welke gegevens we verwerken',
+            body: ['Deze site verzamelt niets op de achtergrond. Er zijn precies drie momenten waarop er gegevens langskomen:'],
+            list: [
+              'Contactformulier — uw naam, e-mailadres en het bericht dat u typt.',
+              'Afspraak plannen — uw naam, e-mailadres en de dag en tijd die u kiest.',
+              'Technische logs — onze hostingpartij legt standaard vast welk IP-adres welke pagina opvraagt en wanneer. Dat hoort bij het uitleveren van een website en gebeurt bij elke site die u bezoekt.',
+            ],
+            after: [
+              'Er staan geen analytics, advertentie- of trackingscripts op deze site, en er wordt geen profiel van u opgebouwd. De lettertypen worden vanaf onze eigen server geladen, dus ook daarvoor gaat er niets naar een derde partij.',
+            ],
+          },
+          {
+            h: 'Waarom, en op welke grondslag',
+            list: [
+              'Om uw vraag te beantwoorden of een afspraak in te plannen — noodzakelijk voor (de aanloop naar) een overeenkomst, artikel 6 lid 1 sub b AVG.',
+              'Om de site te leveren en misbruik tegen te gaan — ons gerechtvaardigd belang, artikel 6 lid 1 sub f AVG.',
+              'Om te onthouden hoe u de site wilt zien — functionele cookies, zie de cookieverklaring.',
+            ],
+          },
+          {
+            h: 'Hoe lang we het bewaren',
+            list: [
+              'Berichten via het contactformulier: zolang nodig om uw vraag af te handelen, en daarna maximaal twaalf maanden.',
+              'Afspraakgegevens: zolang we samenwerken. Facturen bewaren we zeven jaar, omdat de Belastingdienst dat voorschrijft.',
+              'Technische logs: kort, doorgaans enkele weken bij onze hostingpartij.',
+            ],
+          },
+          {
+            h: 'Met wie we het delen',
+            body: [
+              'Alleen met partijen die het nodig hebben om ons werk mogelijk te maken: onze hosting- en e-mailprovider. Die handelen uitsluitend in onze opdracht en mogen uw gegevens nergens anders voor gebruiken. We verkopen niets door en geven niets aan advertentienetwerken.',
+              'Uw gegevens worden binnen de Europese Economische Ruimte verwerkt.',
+            ],
+          },
+          {
+            h: 'Hoe we het beveiligen',
+            body: [
+              'Verkeer met deze site loopt over een versleutelde verbinding (https). Toegang tot e-mail en systemen bij ons is beveiligd met tweestapsverificatie, en alleen mensen die het voor hun werk nodig hebben kunnen erbij.',
+            ],
+          },
+          {
+            h: 'Uw rechten',
+            body: ['U heeft het recht om:'],
+            list: [
+              'in te zien welke gegevens we van u hebben;',
+              'die te laten corrigeren of verwijderen;',
+              'de verwerking te laten beperken of er bezwaar tegen te maken;',
+              'uw gegevens in een gangbaar bestandsformaat mee te krijgen.',
+            ],
+            after: [
+              'Mail info@hinit.nl en we reageren binnen een maand. Bent u het niet eens met hoe we ermee omgaan, dan kunt u een klacht indienen bij de Autoriteit Persoonsgegevens.',
+            ],
+          },
+          {
+            h: 'Wijzigingen',
+            body: [
+              'Verandert er iets aan deze site of aan hoe we met gegevens omgaan, dan passen we deze verklaring aan. Bovenaan staat wanneer dat voor het laatst gebeurd is.',
+            ],
+          },
+        ],
+      },
+      cookies: {
+        nav: 'Cookieverklaring',
+        title: 'Cookieverklaring',
+        lead: 'Deze site plaatst twee cookies, allebei om te onthouden hoe u de site wilt zien. Geen analytics, geen advertenties, geen cookies van derden.',
+        meta: 'Welke cookies HinIT plaatst, waarvoor ze dienen en hoe u ze weigert of verwijdert.',
+        sections: [
+          {
+            h: 'Wat is een cookie?',
+            body: [
+              'Een cookie is een klein tekstbestand dat een website op uw computer of telefoon achterlaat. Bij de volgende keer leest de site dat bestand terug. Vaak worden cookies gebruikt om bezoekers te volgen; wij gebruiken ze alleen om te onthouden wat u zelf hebt ingesteld.',
+            ],
+          },
+          {
+            h: 'Welke cookies plaatsen wij',
+            table: {
+              head: ['Naam', 'Waarvoor', 'Bewaartermijn', 'Soort'],
+              rows: [
+                ['hinit_theme', 'Onthoudt of u de site licht of donker wilt zien.', '1 jaar', 'Functioneel'],
+                ['hinit_lang', 'Onthoudt of u de site in het Nederlands of Engels leest.', '1 jaar', 'Functioneel'],
+              ],
+            },
+            after: [
+              'Allebei zijn het first-party cookies: ze worden door hinit.nl zelf geplaatst, bevatten alleen het woord dat u koos (light of dark, nl of en) en worden nooit meegestuurd naar een andere website.',
+            ],
+          },
+          {
+            h: 'Waarom we niet om toestemming vragen',
+            body: [
+              'Voor cookies die puur functioneel zijn — die alleen doen wat u zelf hebt gevraagd — is geen toestemming nodig. Dat staat in artikel 11.7a van de Telecommunicatiewet. Deze twee slaan geen persoonsgegevens op, bouwen geen profiel op en delen niets. Daarom ziet u hier geen cookiebanner.',
+              'Zouden we later wél iets toevoegen dat u volgt, zoals statistieken of advertentiepixels, dan vragen we vooraf om uw toestemming en passen we deze pagina aan.',
+            ],
+          },
+          {
+            h: 'Cookies van derden',
+            body: [
+              'Die staan er niet. Er zit geen analytics op, geen advertentienetwerk, geen ingesloten video, kaart of socialmediaknop. Ook de lettertypen komen van onze eigen server, zodat uw browser tijdens het bezoek met niemand anders praat dan met ons.',
+            ],
+          },
+          {
+            h: 'Cookies weigeren of verwijderen',
+            body: [
+              'In elke browser kunt u cookies bekijken, blokkeren of wissen — meestal onder Instellingen, bij Privacy. De site blijft gewoon werken zonder deze twee: hij volgt dan het licht- of donkerthema van uw apparaat en de taal van uw browser, en onthoudt uw keuze alleen niet tot het volgende bezoek.',
+            ],
+          },
+          {
+            h: 'Vragen',
+            body: ['Iets onduidelijk? Mail info@hinit.nl, dan leggen we het uit.'],
+          },
+        ],
+      },
+    },
     nav: {
       services: 'Wat we doen',
       why: 'Waarom HinIT',
@@ -293,11 +431,15 @@ export const translations = {
       afternoon: 'Middag',
       confirm: 'Afspraak bevestigen',
       confirming: 'Bezig…',
+      formHint: 'Kies hierboven eerst een dag en een tijd.',
       nameLabel: 'Uw naam',
       emailLabel: 'Uw e-mail',
       errors: { name: 'Vul uw naam in.', email: 'Vul een geldig e-mailadres in.' },
-      successTitle: 'Afspraak staat genoteerd.',
-      successBody: 'U ontvangt een bevestiging per e-mail met een link voor het videogesprek.',
+      successTitle: 'Aanvraag verstuurd.',
+      successBody: 'We bevestigen uw afspraak per e-mail, meestal binnen één werkdag, met een link voor het videogesprek.',
+      mailTitle: 'Uw e-mailprogramma is geopend.',
+      mailBody:
+        'De aanvraag staat klaar in een concept-e-mail. Verstuur die om de afspraak vast te leggen. Werkt dat niet? Mail ons dan rechtstreeks op info@hinit.nl.',
       again: 'Andere tijd kiezen',
       weekdays: ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'],
       weekdaysFull: ['maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag'],
@@ -312,7 +454,8 @@ export const translations = {
       items: [
         { v: 99.9, suffix: '%', label: 'Altijd online', dec: 1 },
         { v: 15, prefix: '< ', suffix: ' min', label: 'Snel antwoord', dec: 0 },
-        { v: 24, suffix: '/7', label: 'We letten op', dec: 0 },
+        // not a quantity: counting it up flashes "22/7", which reads as broken
+        { v: 24, suffix: '/7', label: 'We letten op', dec: 0, static: true },
         { v: 50, suffix: '+', label: 'Blije klanten', dec: 0 },
       ],
       badges: ['ISO 27001', 'Microsoft Partner', 'GDPR', 'SOC 2', 'NIS2'],
@@ -366,6 +509,9 @@ export const translations = {
       send: 'Verstuur',
       sending: 'Versturen…',
       success: 'Bedankt! We nemen binnen één werkdag contact met u op.',
+      mailTitle: 'Uw e-mailprogramma is geopend.',
+      mailBody:
+        'Uw bericht staat klaar in een concept-e-mail. Verstuur die om het naar ons te sturen. Werkt dat niet? Mail ons dan rechtstreeks op info@hinit.nl.',
       successAgain: 'Nog een bericht sturen',
       chips: ['Persoonlijk', 'Duidelijk', 'Veilig'],
       orBook: 'Liever meteen een moment kiezen?',
@@ -376,6 +522,7 @@ export const translations = {
     footer: {
       tagline: 'Uw IT, veilig en zonder zorgen geregeld.',
       navTitle: 'Navigatie',
+      legalTitle: 'Juridisch',
       contactTitle: 'Contact',
       nav: ['Home', 'Wat we doen', 'Waarom HinIT', 'Afspraak', 'Contact'],
       built: 'Gemaakt in Amsterdam',
@@ -392,6 +539,136 @@ export const translations = {
       title: 'HinIT — IT that just works · Management, security & support',
       description:
         'HinIT keeps your company’s computers, internet and security running. One fixed team, a reply within 15 minutes, a fixed monthly price. Book a free intro call.',
+    },
+    legal: {
+      updatedLabel: 'Last updated',
+      updated: '2026-09-09',
+      backHome: 'Back to the homepage',
+      toc: 'On this page',
+      privacy: {
+        nav: 'Privacy statement',
+        title: 'Privacy statement',
+        lead: 'This statement explains what personal data HinIT processes when you visit this website or get in touch, why we do it, and what your rights are.',
+        meta: 'What data HinIT processes, why, how long we keep it and what rights you have.',
+        sections: [
+          {
+            h: 'Who is responsible',
+            body: [
+              'HinIT is the controller for the processing described on this page. You can reach us at info@hinit.nl or +31 6 84018864. We work across the Netherlands and are based in Amsterdam.',
+            ],
+          },
+          {
+            h: 'What we process',
+            body: ['This site collects nothing in the background. There are exactly three moments where data comes past:'],
+            list: [
+              'Contact form — your name, email address and the message you type.',
+              'Booking a call — your name, email address and the day and time you pick.',
+              'Technical logs — our hosting provider records which IP address requested which page and when. That is part of serving a website and happens on every site you visit.',
+            ],
+            after: [
+              'There are no analytics, advertising or tracking scripts on this site, and no profile is built about you. The fonts are served from our own server, so nothing goes to a third party for those either.',
+            ],
+          },
+          {
+            h: 'Why, and on what legal basis',
+            list: [
+              'To answer your question or schedule a call — necessary for a contract or the steps leading up to one, Article 6(1)(b) GDPR.',
+              'To deliver the site and prevent abuse — our legitimate interest, Article 6(1)(f) GDPR.',
+              'To remember how you want the site to look — functional cookies, see the cookie statement.',
+            ],
+          },
+          {
+            h: 'How long we keep it',
+            list: [
+              'Contact form messages: as long as needed to handle your question, and at most twelve months after that.',
+              'Booking details: for as long as we work together. Invoices are kept for seven years, because Dutch tax law requires it.',
+              'Technical logs: briefly, typically a few weeks at our hosting provider.',
+            ],
+          },
+          {
+            h: 'Who we share it with',
+            body: [
+              'Only parties we need to do the work: our hosting and email providers. They act solely on our instructions and may not use your data for anything else. We do not sell anything on and we hand nothing to advertising networks.',
+              'Your data is processed within the European Economic Area.',
+            ],
+          },
+          {
+            h: 'How we secure it',
+            body: [
+              'Traffic to this site runs over an encrypted connection (https). Access to our email and systems is protected with two-step verification, and only people who need it for their work can reach it.',
+            ],
+          },
+          {
+            h: 'Your rights',
+            body: ['You have the right to:'],
+            list: [
+              'see what data we hold about you;',
+              'have it corrected or deleted;',
+              'have the processing restricted, or object to it;',
+              'receive your data in a common file format.',
+            ],
+            after: [
+              'Email info@hinit.nl and we will respond within a month. If you disagree with how we handle it, you can complain to the Dutch Data Protection Authority (Autoriteit Persoonsgegevens).',
+            ],
+          },
+          {
+            h: 'Changes',
+            body: [
+              'If something changes about this site or about how we handle data, we update this statement. The date at the top says when that last happened.',
+            ],
+          },
+        ],
+      },
+      cookies: {
+        nav: 'Cookie statement',
+        title: 'Cookie statement',
+        lead: 'This site sets two cookies, both to remember how you want the site to look. No analytics, no advertising, no third-party cookies.',
+        meta: 'Which cookies HinIT sets, what they are for, and how to refuse or delete them.',
+        sections: [
+          {
+            h: 'What is a cookie?',
+            body: [
+              'A cookie is a small text file a website leaves on your computer or phone. Next time, the site reads it back. Cookies are often used to follow visitors around; we use them only to remember what you set yourself.',
+            ],
+          },
+          {
+            h: 'Which cookies we set',
+            table: {
+              head: ['Name', 'What for', 'Retention', 'Type'],
+              rows: [
+                ['hinit_theme', 'Remembers whether you want the site light or dark.', '1 year', 'Functional'],
+                ['hinit_lang', 'Remembers whether you read the site in Dutch or English.', '1 year', 'Functional'],
+              ],
+            },
+            after: [
+              'Both are first-party cookies: they are set by hinit.nl itself, contain only the word you picked (light or dark, nl or en), and are never sent to another website.',
+            ],
+          },
+          {
+            h: 'Why we do not ask for consent',
+            body: [
+              'Cookies that are purely functional — that only do what you asked for yourself — do not require consent. That is set out in Article 11.7a of the Dutch Telecommunications Act. These two store no personal data, build no profile and share nothing. That is why there is no cookie banner here.',
+              'If we ever add something that does follow you, such as statistics or advertising pixels, we will ask for your consent first and update this page.',
+            ],
+          },
+          {
+            h: 'Third-party cookies',
+            body: [
+              'There are none. No analytics, no ad network, no embedded video, map or social button. The fonts come from our own server too, so during your visit your browser talks to nobody but us.',
+            ],
+          },
+          {
+            h: 'Refusing or deleting cookies',
+            body: [
+              'Every browser lets you view, block or clear cookies — usually under Settings, in Privacy. The site keeps working without these two: it will follow your device\u2019s light or dark theme and your browser\u2019s language, it just will not remember your choice until the next visit.',
+            ],
+          },
+          {
+            h: 'Questions',
+            body: ['Anything unclear? Email info@hinit.nl and we will explain.'],
+          },
+        ],
+      },
     },
     nav: {
       services: 'What we do',
@@ -666,11 +943,16 @@ export const translations = {
       afternoon: 'Afternoon',
       confirm: 'Confirm appointment',
       confirming: 'Working…',
+      formHint: 'Pick a day and a time above first.',
       nameLabel: 'Your name',
       emailLabel: 'Your email',
       errors: { name: 'Please enter your name.', email: 'Please enter a valid email address.' },
-      successTitle: 'Your appointment is booked.',
-      successBody: 'You will get a confirmation by email with a link for the video call.',
+      successTitle: 'Request sent.',
+      successBody:
+        'We’ll confirm your appointment by email, usually within one business day, with a link for the video call.',
+      mailTitle: 'Your email app is open.',
+      mailBody:
+        'The request is waiting in a draft email. Send it to lock in the appointment. Nothing happened? Email us directly at info@hinit.nl.',
       again: 'Pick another time',
       weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       weekdaysFull: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -685,7 +967,7 @@ export const translations = {
       items: [
         { v: 99.9, suffix: '%', label: 'Always online', dec: 1 },
         { v: 15, prefix: '< ', suffix: ' min', label: 'Fast reply', dec: 0 },
-        { v: 24, suffix: '/7', label: 'We keep watch', dec: 0 },
+        { v: 24, suffix: '/7', label: 'We keep watch', dec: 0, static: true },
         { v: 50, suffix: '+', label: 'Happy clients', dec: 0 },
       ],
       badges: ['ISO 27001', 'Microsoft Partner', 'GDPR', 'SOC 2', 'NIS2'],
@@ -739,6 +1021,9 @@ export const translations = {
       send: 'Send',
       sending: 'Sending…',
       success: 'Thank you! We’ll get back to you within one business day.',
+      mailTitle: 'Your email app is open.',
+      mailBody:
+        'Your message is waiting in a draft email. Send it to reach us. Nothing happened? Email us directly at info@hinit.nl.',
       successAgain: 'Send another message',
       chips: ['Personal', 'Clear', 'Secure'],
       orBook: 'Rather pick a moment right away?',
@@ -749,6 +1034,7 @@ export const translations = {
     footer: {
       tagline: 'Your IT, secure and worry-free.',
       navTitle: 'Navigation',
+      legalTitle: 'Legal',
       contactTitle: 'Contact',
       nav: ['Home', 'What we do', 'Why HinIT', 'Book', 'Contact'],
       built: 'Made in Amsterdam',

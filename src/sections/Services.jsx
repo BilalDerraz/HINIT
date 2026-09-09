@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { ServerCog, ShieldCheck, Network, LifeBuoy, Workflow, MonitorSmartphone, ArrowRight, Check } from 'lucide-react';
 import { useI18n } from '../i18n';
 import Reveal from '../components/Reveal';
+import Section, { SectionHeading } from '../components/Section';
 import { serviceHref } from '../lib/router';
 
 export const icons = [ServerCog, ShieldCheck, Network, LifeBuoy, Workflow, MonitorSmartphone];
@@ -139,90 +140,81 @@ export default function Services() {
   useEffect(() => () => frame.current && cancelAnimationFrame(frame.current), []);
 
   return (
-    <section id="services" className="relative py-20 sm:py-28 lg:py-32">
-      <div className="relative mx-auto max-w-7xl px-5">
-        <div className="mb-12 max-w-3xl sm:mb-14">
-          <Reveal>
-            <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              {t.services.kicker}
-            </span>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <h2 className="font-display text-[clamp(1.9rem,4.5vw,3.4rem)] font-semibold leading-[1.02] text-fog">
-              {t.services.title}
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-mist sm:text-lg">{t.services.sub}</p>
-          </Reveal>
-        </div>
+    <Section id="services" aria-labelledby="services-title">
+      <SectionHeading
+        kicker={t.services.kicker}
+        title={t.services.title}
+        titleId="services-title"
+        sub={t.services.sub}
+      />
 
-        <div
-          ref={gridRef}
-          onPointerMove={onPointerMove}
-          onPointerLeave={onPointerLeave}
-          onFocus={onFocus}
-          onBlur={onPointerLeave}
-          className="grid auto-rows-[minmax(180px,auto)] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
-        >
-          {t.services.items.map((item, i) => {
-            /* Wrap rather than index blindly: the copy lives in i18n, so a
-               seventh service added there must not take the whole page down
-               with an undefined icon. */
-            const Icon = icons[i % icons.length];
-            const accent = accents[i % accents.length];
-            const feature = i === 0;
-            return (
-              <Reveal key={item.slug} delay={Math.min(i, 3) * 0.06} className={spanClasses[i] ?? 'md:col-span-1'}>
-                <a
-                  data-spot-card
-                  href={serviceHref(item.slug)}
-                  style={{ '--card-accent': accent }}
-                  aria-label={`${item.t} — ${t.services.link}`}
-                  className={`card-pop group ${feature ? 'card-pop-feature' : ''} flex h-full flex-col justify-between rounded-3xl p-6 sm:p-7`}
-                >
-                  <div>
-                    <div
-                      className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
-                        feature ? 'bg-white/20 text-white' : 'card-pop-chip'
-                      }`}
-                    >
-                      <Icon style={{ width: 22, height: 22 }} strokeWidth={1.8} />
-                    </div>
-                    <h3 className={`font-display font-semibold ${feature ? 'text-2xl sm:text-3xl' : 'text-xl'}`}>
-                      {item.t}
-                    </h3>
-                    <p className={`mt-2 ${feature ? 'max-w-md text-base text-white/90' : 'card-pop-muted text-sm leading-relaxed'}`}>
-                      {item.d}
-                    </p>
-                    {/* The feature tile spans two rows from md up. Three of its
-                        own outcomes fill that height with something useful
-                        instead of leaving half the card empty. */}
-                    {feature && item.detail?.outcomes && (
-                      <ul className="mt-7 hidden list-none space-y-2.5 md:block">
-                        {item.detail.outcomes.slice(0, 3).map((o) => (
-                          <li key={o} className="flex items-start gap-2.5 text-sm text-white/85">
-                            <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
-                            {o}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  <span
-                    className={`mt-6 flex items-center gap-1.5 text-sm font-medium ${
-                      feature ? 'text-white' : 'card-pop-link'
+      <div
+        ref={gridRef}
+        onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
+        onFocus={onFocus}
+        onBlur={onPointerLeave}
+        className="grid auto-rows-[minmax(180px,auto)] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
+      >
+        {t.services.items.map((item, i) => {
+          /* Wrap rather than index blindly: the copy lives in i18n, so a
+             seventh service added there must not take the whole page down
+             with an undefined icon. */
+          const Icon = icons[i % icons.length];
+          const accent = accents[i % accents.length];
+          const feature = i === 0;
+          return (
+            <Reveal key={item.slug} delay={Math.min(i, 3) * 0.06} className={spanClasses[i] ?? 'md:col-span-1'}>
+              <a
+                data-spot-card
+                href={serviceHref(item.slug)}
+                style={{ '--card-accent': accent }}
+                aria-label={`${item.t} — ${t.services.link}`}
+                className={`card-pop group ${feature ? 'card-pop-feature' : ''} flex h-full flex-col justify-between rounded-3xl p-6 sm:p-7`}
+              >
+                <div>
+                  <div
+                    className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
+                      feature ? 'bg-white/20 text-white' : 'card-pop-chip'
                     }`}
                   >
-                    {t.services.link}
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-                  </span>
-                </a>
-              </Reveal>
-            );
-          })}
-        </div>
+                    <Icon style={{ width: 22, height: 22 }} strokeWidth={1.8} aria-hidden="true" />
+                  </div>
+                  <h3 className={`font-display font-semibold ${feature ? 'type-sub' : 'text-xl'}`}>{item.t}</h3>
+                  <p
+                    className={`mt-2 ${
+                      feature ? 'max-w-md text-base leading-relaxed text-white/90' : 'text-sm leading-relaxed text-mist'
+                    }`}
+                  >
+                    {item.d}
+                  </p>
+                  {/* The feature tile spans two rows from md up. Three of its
+                      own outcomes fill that height with something useful
+                      instead of leaving half the card empty. */}
+                  {feature && item.detail?.outcomes && (
+                    <ul className="mt-7 hidden list-none space-y-2.5 md:block">
+                      {item.detail.outcomes.slice(0, 3).map((o) => (
+                        <li key={o} className="flex items-start gap-2.5 text-sm text-white/85">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+                          {o}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <span
+                  className={`mt-6 flex items-center gap-1.5 text-sm font-medium ${
+                    feature ? 'text-white' : 'card-pop-link'
+                  }`}
+                >
+                  {t.services.link}
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                </span>
+              </a>
+            </Reveal>
+          );
+        })}
       </div>
-    </section>
+    </Section>
   );
 }

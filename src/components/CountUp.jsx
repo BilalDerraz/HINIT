@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import { useInView } from 'motion/react';
+import { useEffect, useState } from 'react';
+import useInView from './useInView';
 import { useI18n } from '../i18n';
 
 /** Animated count-up that fires once when scrolled into view. */
 export default function CountUp({ to, decimals = 0, prefix = '', suffix = '', duration = 1800, className = '' }) {
   const { t } = useI18n();
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const [ref, inView] = useInView();
   const [val, setVal] = useState(0);
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { Mail, Phone, MapPin, ArrowUp } from 'lucide-react';
 import { useI18n } from '../i18n';
 import Logo from '../components/Logo';
+import { pageHref } from '../lib/router';
 
 export default function Footer() {
   const { t } = useI18n();
@@ -9,7 +10,7 @@ export default function Footer() {
 
   return (
     <footer className="relative border-t border-line pt-14 sm:pt-16">
-      <div className="mx-auto max-w-7xl px-5">
+      <div className="container-page">
         <div className="grid gap-10 pb-12 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr] md:gap-12 md:pb-14">
           <div>
             <a href="#top" className="inline-flex items-center rounded-lg" aria-label={t.nav.toTop}>
@@ -61,9 +62,25 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-line py-6 text-xs text-mist sm:flex-row sm:py-7">
-          <span>
-            © {year} HinIT. {t.footer.rights}
-          </span>
+          <div className="flex flex-col items-center gap-x-5 gap-y-2 sm:flex-row">
+            <span>
+              © {year} HinIT. {t.footer.rights}
+            </span>
+            <nav aria-label={t.footer.legalTitle} className="flex items-center gap-x-5">
+              <a
+                href={pageHref('privacy')}
+                className="flex min-h-[24px] items-center transition-colors hover:text-accent"
+              >
+                {t.legal.privacy.nav}
+              </a>
+              <a
+                href={pageHref('cookies')}
+                className="flex min-h-[24px] items-center transition-colors hover:text-accent"
+              >
+                {t.legal.cookies.nav}
+              </a>
+            </nav>
+          </div>
           <div className="flex items-center gap-5">
             {/* The Dutch flag as two spans rather than 🇳🇱: Windows ships no
                 glyph for regional-indicator pairs, so the emoji renders there

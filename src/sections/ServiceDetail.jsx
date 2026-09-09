@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronRight } from 'lucide-react';
 import { useI18n } from '../i18n';
 import Reveal from '../components/Reveal';
+import Section from '../components/Section';
 import CTAButton from '../components/CTAButton';
 import { icons, accents } from './Services';
 import { serviceHref } from '../lib/router';
@@ -10,8 +11,8 @@ import { useDocumentHead, SITE_NAME, SITE_URL } from '../lib/head';
 /** Shown when a URL points at a service that does not exist. */
 function NotFound({ sp, items }) {
   return (
-    <section className="relative mx-auto max-w-3xl px-5 pb-24 pt-36 text-center sm:pt-44">
-      <h1 className="font-display text-[clamp(1.9rem,5vw,3rem)] font-semibold leading-[1.05] text-fog">
+    <section className="container-page container-prose relative max-w-3xl pb-24 pt-36 text-center sm:pt-44">
+      <h1 className="type-page font-display font-semibold text-fog">
         {sp.notFoundTitle}
       </h1>
       <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-mist">{sp.notFoundBody}</p>
@@ -22,7 +23,7 @@ function NotFound({ sp, items }) {
             <a
               href={serviceHref(s.slug)}
               style={{ '--card-accent': accents[i % accents.length] }}
-              className="card-pop-link card flex items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left text-sm font-medium transition-colors hover:border-accent/50"
+              className="accent-scope accent-text card flex items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left text-sm font-medium transition-colors hover:border-accent/50"
             >
               {s.t}
               <ChevronRight className="h-4 w-4 shrink-0" />
@@ -68,7 +69,7 @@ export default function ServiceDetail({ slug }) {
   const others = items.filter((s) => s.slug !== slug);
 
   return (
-    <article className="relative">
+    <article className="accent-scope relative" style={{ '--card-accent': accent }}>
       {/* ------------------------------------------------------------ hero */}
       <header className="relative overflow-hidden pb-14 pt-32 sm:pb-16 sm:pt-40">
         <div
@@ -78,7 +79,7 @@ export default function ServiceDetail({ slug }) {
             background: `radial-gradient(60% 50% at 50% 0%, ${accent}22 0%, transparent 70%)`,
           }}
         />
-        <div className="relative mx-auto max-w-4xl px-5">
+        <div className="container-page container-prose relative">
           <Reveal>
             <nav aria-label={sp.breadcrumb} className="mb-8">
               <a
@@ -101,15 +102,15 @@ export default function ServiceDetail({ slug }) {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <h1 className="font-display text-[clamp(2.2rem,6vw,4rem)] font-semibold leading-[1] tracking-[-0.02em] text-fog">
+            <h1 className="type-page font-display font-semibold text-fog">
               {service.t}
             </h1>
           </Reveal>
           <Reveal delay={0.15}>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fog/90 sm:text-xl">{d.tagline}</p>
+            <p className="type-lead mt-5 max-w-2xl text-fog/90 sm:text-xl">{d.tagline}</p>
           </Reveal>
           <Reveal delay={0.2}>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-mist">{d.intro}</p>
+            <p className="type-lead mt-5 max-w-2xl text-mist">{d.intro}</p>
           </Reveal>
 
           <Reveal delay={0.25}>
@@ -127,157 +128,146 @@ export default function ServiceDetail({ slug }) {
       </header>
 
       {/* -------------------------------------------------------- what you get */}
-      <section className="relative py-14 sm:py-20" aria-labelledby="svc-includes">
-        <div className="mx-auto max-w-4xl px-5">
-          <Reveal>
-            <h2
-              id="svc-includes"
-              className="font-display text-[clamp(1.6rem,3.6vw,2.4rem)] font-semibold leading-[1.1] text-fog"
-            >
-              {sp.includes}
-            </h2>
-          </Reveal>
+      <Section size="sm" prose aria-labelledby="svc-includes">
+        <Reveal>
+          <h2
+            id="svc-includes"
+            className="type-sub font-display font-semibold text-fog"
+          >
+            {sp.includes}
+          </h2>
+        </Reveal>
 
-          <ul className="mt-8 grid list-none gap-4 sm:grid-cols-2">
-            {d.includes.map((inc, i) => (
-              <Reveal key={inc.t} as="li" delay={Math.min(i, 3) * 0.06}>
-                <div className="card h-full rounded-3xl p-6">
-                  <span
-                    aria-hidden="true"
-                    className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold text-white"
-                    style={{ background: accent }}
-                  >
-                    {i + 1}
-                  </span>
-                  <h3 className="font-display text-lg font-semibold text-fog">{inc.t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-mist">{inc.d}</p>
-                </div>
-              </Reveal>
-            ))}
-          </ul>
-        </div>
-      </section>
+        <ul className="mt-8 grid list-none gap-4 sm:grid-cols-2">
+          {d.includes.map((inc, i) => (
+            <Reveal key={inc.t} as="li" delay={Math.min(i, 3) * 0.06}>
+              <div className="card h-full rounded-3xl p-6">
+                <span
+                  aria-hidden="true"
+                  className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold text-white"
+                  style={{ background: accent }}
+                >
+                  {i + 1}
+                </span>
+                <h3 className="font-display text-lg font-semibold text-fog">{inc.t}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-mist">{inc.d}</p>
+              </div>
+            </Reveal>
+          ))}
+        </ul>
+      </Section>
 
       {/* --------------------------------------------------------- outcomes */}
-      <section className="relative py-14 sm:py-20" aria-labelledby="svc-outcomes">
-        <div className="mx-auto max-w-4xl px-5">
-          <Reveal>
-            <div className="card rounded-3xl p-6 sm:p-9">
-              <h2
-                id="svc-outcomes"
-                className="font-display text-[clamp(1.6rem,3.6vw,2.4rem)] font-semibold leading-[1.1] text-fog"
-              >
-                {sp.outcomes}
-              </h2>
-              <ul className="mt-7 grid list-none gap-4 sm:grid-cols-2">
-                {d.outcomes.map((o) => (
-                  <li key={o} className="flex items-start gap-3 text-[15px] leading-relaxed text-fog/85">
-                    <span
-                      aria-hidden="true"
-                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
-                      style={{ background: `${accent}26`, color: accent }}
-                    >
-                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                    </span>
-                    {o}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      <Section size="sm" prose aria-labelledby="svc-outcomes">
+        <Reveal>
+          <div className="card rounded-3xl p-6 sm:p-9">
+            <h2
+              id="svc-outcomes"
+              className="type-sub font-display font-semibold text-fog"
+            >
+              {sp.outcomes}
+            </h2>
+            <ul className="mt-7 grid list-none gap-4 sm:grid-cols-2">
+              {d.outcomes.map((o) => (
+                <li key={o} className="flex items-start gap-3 text-[15px] leading-relaxed text-fog/85">
+                  <span
+                    aria-hidden="true"
+                    className="accent-chip mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                  >
+                    <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                  </span>
+                  {o}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
+      </Section>
 
       {/* -------------------------------------------------------------- faq */}
-      <section className="relative py-14 sm:py-20" aria-labelledby="svc-faq">
-        <div className="mx-auto max-w-4xl px-5">
-          <Reveal>
-            <h2
-              id="svc-faq"
-              className="font-display text-[clamp(1.6rem,3.6vw,2.4rem)] font-semibold leading-[1.1] text-fog"
-            >
-              {sp.faq}
-            </h2>
-          </Reveal>
-          <dl className="mt-8 space-y-4">
-            {d.faq.map((f, i) => (
-              <Reveal key={f.q} delay={i * 0.06}>
-                <div className="card rounded-2xl p-6">
-                  <dt className="font-display text-base font-semibold text-fog">{f.q}</dt>
-                  <dd className="mt-2 text-[15px] leading-relaxed text-mist">{f.a}</dd>
-                </div>
-              </Reveal>
-            ))}
-          </dl>
-        </div>
-      </section>
+      <Section size="sm" prose aria-labelledby="svc-faq">
+        <Reveal>
+          <h2
+            id="svc-faq"
+            className="type-sub font-display font-semibold text-fog"
+          >
+            {sp.faq}
+          </h2>
+        </Reveal>
+        <dl className="mt-8 space-y-4">
+          {d.faq.map((f, i) => (
+            <Reveal key={f.q} delay={i * 0.06}>
+              <div className="card rounded-2xl p-6">
+                <dt className="font-display text-base font-semibold text-fog">{f.q}</dt>
+                <dd className="mt-2 text-[15px] leading-relaxed text-mist">{f.a}</dd>
+              </div>
+            </Reveal>
+          ))}
+        </dl>
+      </Section>
 
       {/* -------------------------------------------------------------- cta */}
-      <section className="relative py-14 sm:py-20">
-        <div className="mx-auto max-w-4xl px-5">
-          <Reveal>
-            <div className="bg-brand-gradient relative overflow-hidden rounded-3xl px-6 py-12 text-center sm:px-12 sm:py-14">
-              <h2 className="font-display text-[clamp(1.6rem,3.8vw,2.5rem)] font-semibold leading-[1.1] text-white">
-                {sp.ctaTitle}
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/85">{sp.ctaBody}</p>
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <a
-                  href="#booking"
-                  className="tap inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-[#22307a] transition-transform duration-300 hover:-translate-y-0.5 sm:w-auto"
-                >
-                  {sp.ctaPrimary}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-                <a
-                  href="#contact"
-                  className="tap inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/40 px-7 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/10 sm:w-auto"
-                >
-                  {sp.ctaSecondary}
-                </a>
-              </div>
+      <Section size="sm" prose>
+        <Reveal>
+          <div className="bg-brand-gradient relative overflow-hidden rounded-3xl px-6 py-12 text-center sm:px-12 sm:py-14">
+            <h2 className="type-sub font-display font-semibold text-white">
+              {sp.ctaTitle}
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/85">{sp.ctaBody}</p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a
+                href="#booking"
+                className="tap inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-[#22307a] transition-transform duration-300 hover:-translate-y-0.5 sm:w-auto"
+              >
+                {sp.ctaPrimary}
+                <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href="#contact"
+                className="tap inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/40 px-7 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/10 sm:w-auto"
+              >
+                {sp.ctaSecondary}
+              </a>
             </div>
-          </Reveal>
-        </div>
-      </section>
+          </div>
+        </Reveal>
+      </Section>
 
       {/* --------------------------------------------------- other services */}
-      <section className="relative pb-20 pt-4 sm:pb-28" aria-labelledby="svc-other">
-        <div className="mx-auto max-w-4xl px-5">
-          <Reveal>
-            <h2 id="svc-other" className="font-display text-xl font-semibold text-fog">
-              {sp.other}
-            </h2>
-          </Reveal>
-          <ul className="mt-6 grid list-none gap-3 sm:grid-cols-2">
-            {others.map((s, i) => {
-              const oi = items.findIndex((x) => x.slug === s.slug);
-              const OtherIcon = icons[oi % icons.length];
-              return (
-                <Reveal key={s.slug} as="li" delay={Math.min(i, 3) * 0.05}>
-                  <a
-                    href={serviceHref(s.slug)}
-                    className="card group flex h-full items-center gap-4 rounded-2xl p-5 transition-colors hover:border-accent/50"
+      <Section size="sm" prose className="pt-0" aria-labelledby="svc-other">
+        <Reveal>
+          <h2 id="svc-other" className="font-display text-xl font-semibold text-fog">
+            {sp.other}
+          </h2>
+        </Reveal>
+        <ul className="mt-6 grid list-none gap-3 sm:grid-cols-2">
+          {others.map((s, i) => {
+            const oi = items.findIndex((x) => x.slug === s.slug);
+            const OtherIcon = icons[oi % icons.length];
+            return (
+              <Reveal key={s.slug} as="li" delay={Math.min(i, 3) * 0.05}>
+                <a
+                  href={serviceHref(s.slug)}
+                  className="card group flex h-full items-center gap-4 rounded-2xl p-5 transition-colors hover:border-accent/50"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="accent-scope accent-chip flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                    style={{ '--card-accent': accents[oi % accents.length] }}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                      style={{ background: `${accents[oi % accents.length]}1f`, color: accents[oi % accents.length] }}
-                    >
-                      <OtherIcon className="h-5 w-5" strokeWidth={1.8} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-display text-base font-semibold text-fog">{s.t}</span>
-                      <span className="mt-0.5 block text-xs leading-relaxed text-mist">{s.d}</span>
-                    </span>
-                    <ChevronRight className="h-4 w-4 shrink-0 text-mist transition-transform duration-300 group-hover:translate-x-0.5" />
-                  </a>
-                </Reveal>
-              );
-            })}
-          </ul>
-        </div>
-      </section>
+                    <OtherIcon className="h-5 w-5" strokeWidth={1.8} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-display text-base font-semibold text-fog">{s.t}</span>
+                    <span className="mt-0.5 block text-xs leading-relaxed text-mist">{s.d}</span>
+                  </span>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-mist transition-transform duration-300 group-hover:translate-x-0.5" />
+                </a>
+              </Reveal>
+            );
+          })}
+        </ul>
+      </Section>
     </article>
   );
 }

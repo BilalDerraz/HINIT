@@ -1,8 +1,8 @@
 import { useId, useState } from 'react';
-import { motion } from 'motion/react';
 import { Plus, MessageCircleQuestion } from 'lucide-react';
 import { useI18n } from '../i18n';
 import Reveal from '../components/Reveal';
+import Section, { SectionHeading } from '../components/Section';
 
 function Item({ q, a, open, onToggle }) {
   const id = useId();
@@ -30,19 +30,21 @@ function Item({ q, a, open, onToggle }) {
       </h3>
       {/* The panel stays mounted so the button's aria-controls always points at
           a real element; `inert` keeps the collapsed answer out of the tab order
-          and away from screen readers. */}
-      <motion.div
+          and away from screen readers. The open/close is a CSS grid-row
+          transition (see `.collapse`), which animates to the answer's natural
+          height without measuring it. */}
+      <div
         id={`${id}-panel`}
         role="region"
         aria-labelledby={`${id}-button`}
         inert={!open}
-        initial={false}
-        animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
-        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="overflow-hidden"
+        data-open={open}
+        className="collapse"
       >
-        <p className="px-5 pb-5 text-[15px] leading-relaxed text-mist sm:px-6">{a}</p>
-      </motion.div>
+        <div>
+          <p className="px-5 pb-5 text-[15px] leading-relaxed text-mist sm:px-6">{a}</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -52,35 +54,27 @@ export default function FAQ() {
   const [open, setOpen] = useState(0);
 
   return (
-    <section id="faq" className="relative py-20 sm:py-28 lg:py-32">
-      <div className="relative mx-auto max-w-5xl px-5">
-        <div className="mb-12 text-center">
-          <Reveal>
-            <span className="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              <MessageCircleQuestion className="h-4 w-4" strokeWidth={2} />
-              {t.faq.kicker}
-            </span>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <h2 className="mx-auto max-w-2xl font-display text-[clamp(1.8rem,4.2vw,3.1rem)] font-semibold leading-[1.05] text-fog">
-              {t.faq.title}
-            </h2>
-          </Reveal>
-        </div>
+    <Section id="faq" aria-labelledby="faq-title">
+      <SectionHeading
+        kicker={t.faq.kicker}
+        kickerIcon={MessageCircleQuestion}
+        title={t.faq.title}
+        titleId="faq-title"
+        align="center"
+      />
 
-        <div className="space-y-3">
-          {t.faq.items.map((item, i) => (
-            <Reveal key={item.q} delay={Math.min(i, 4) * 0.05}>
-              <Item
-                q={item.q}
-                a={item.a}
-                open={open === i}
-                onToggle={() => setOpen((cur) => (cur === i ? -1 : i))}
-              />
-            </Reveal>
-          ))}
-        </div>
+      <div className="mx-auto max-w-3xl space-y-3">
+        {t.faq.items.map((item, i) => (
+          <Reveal key={item.q} delay={Math.min(i, 4) * 0.05}>
+            <Item
+              q={item.q}
+              a={item.a}
+              open={open === i}
+              onToggle={() => setOpen((cur) => (cur === i ? -1 : i))}
+            />
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }

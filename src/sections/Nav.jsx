@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { motion } from 'motion/react';
 import { Sun, Moon, Menu, X } from 'lucide-react';
 import { useI18n } from '../i18n';
 import { useTheme } from '../theme';
@@ -77,12 +76,7 @@ export default function Nav({ routePath = '/' }) {
   ];
 
   return (
-    <motion.header
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed inset-x-0 top-0 z-[900] flex justify-center px-3 pt-3 sm:px-4 sm:pt-4"
-    >
+    <header className="drop-in fixed inset-x-0 top-0 z-[900] flex justify-center px-3 pt-3 sm:px-4 sm:pt-4">
       {/* The sheet below is positioned against this wrapper, so it always hangs
           exactly under the bar — the bar's height changes with the breakpoint
           (padding, logo size, 44px tap targets) and a fixed offset drifted into
@@ -137,11 +131,11 @@ export default function Nav({ routePath = '/' }) {
               role="group"
               aria-label="Taal / Language"
             >
-              <motion.span
+              {/* the pill that slides under the active language */}
+              <span
                 aria-hidden="true"
-                className="bg-brand-gradient absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full"
-                animate={{ left: lang === 'nl' ? '2px' : 'calc(50%)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                className="bg-brand-gradient absolute bottom-0.5 top-0.5 w-[calc(50%-2px)] rounded-full transition-[left] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                style={{ left: lang === 'nl' ? '2px' : '50%' }}
               />
               {['nl', 'en'].map((code) => (
                 <button
@@ -176,14 +170,15 @@ export default function Nav({ routePath = '/' }) {
           </div>
         </nav>
 
-        <motion.div
+        <div
           id="mobile-menu"
           ref={panelRef}
-          initial={false}
-          animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
-          style={{ pointerEvents: open ? 'auto' : 'none' }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="glass absolute left-0 right-0 top-full mt-2 rounded-3xl p-3 lg:hidden"
+          style={{
+            opacity: open ? 1 : 0,
+            transform: open ? 'none' : 'translateY(-10px)',
+            pointerEvents: open ? 'auto' : 'none',
+          }}
+          className="glass absolute left-0 right-0 top-full mt-2 rounded-3xl p-3 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden"
           aria-hidden={!open}
         >
           <div className="flex flex-col">
@@ -218,8 +213,8 @@ export default function Nav({ routePath = '/' }) {
               {t.nav.cta}
             </a>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.header>
+    </header>
   );
 }

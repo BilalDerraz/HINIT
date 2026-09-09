@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { I18nProvider, useI18n } from './i18n';
 import { ThemeProvider } from './theme';
 import NetworkBackground from './components/NetworkBackground';
-import { useRoute, serviceSlug, HOME } from './lib/router';
+import { useRoute, serviceSlug, pageSlug, HOME } from './lib/router';
 import { useDocumentHead, SITE_URL } from './lib/head';
 
 import Nav from './sections/Nav';
@@ -18,6 +18,7 @@ import FAQ from './sections/FAQ';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
 import ServiceDetail from './sections/ServiceDetail';
+import LegalPage from './sections/LegalPage';
 
 function SkipLink() {
   const { t } = useI18n();
@@ -58,6 +59,7 @@ function Home() {
 function Site() {
   const { path, anchor } = useRoute();
   const isHome = path === HOME;
+  const page = pageSlug(path);
   const prevPath = useRef(path);
 
   /**
@@ -85,7 +87,7 @@ function Site() {
       {/* tabIndex -1 so the skip link actually moves focus here, not just the
           viewport — a plain #main target is not focusable on its own. */}
       <main id="main" tabIndex={-1}>
-        {isHome ? <Home /> : <ServiceDetail slug={serviceSlug(path)} />}
+        {isHome ? <Home /> : page ? <LegalPage slug={page} /> : <ServiceDetail slug={serviceSlug(path)} />}
       </main>
       <Footer />
     </div>

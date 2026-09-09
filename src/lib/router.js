@@ -45,6 +45,19 @@ export function useRoute() {
   return route;
 }
 
+/** Standalone pages that live at the top level, e.g. #/privacy. */
+export const PAGES = ['privacy', 'cookies'];
+
+/** Href for a standalone page. */
+export const pageHref = (slug) => `#/${slug}`;
+
+/** Pull a known page slug out of the path, or null when it is not one. */
+export function pageSlug(path) {
+  const m = /^\/([a-z0-9-]+)$/i.exec(path);
+  const slug = m && m[1].toLowerCase();
+  return slug && PAGES.includes(slug) ? slug : null;
+}
+
 /** Href for a service detail page. */
 export const serviceHref = (slug) => `#/services/${slug}`;
 

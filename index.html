@@ -43,12 +43,11 @@
     />
     <meta name="twitter:image" content="https://hinit.nl/og-image.png" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Fonts are self-hosted (see src/fonts.css): no third-party request, no
+         extra handshake on the critical path. Preload the two latin faces the
+         first screenful always needs. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/space-grotesk-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
 
     <!-- structured data: helps Google show the business card / rich result -->
     <script type="application/ld+json">

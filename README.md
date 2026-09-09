@@ -18,7 +18,45 @@ serves that bundle.
 ## Stack
 
 React 19 · Vite 6 · Tailwind CSS v4 · Motion · lucide-react.
-No router, no state library — it is a single page.
+A ~50-line hash router (`src/lib/router.js`), no state library.
+Fonts are self-hosted (`public/fonts`, `src/fonts.css`) — the site makes **no
+third-party requests at all**.
+
+## Configuration
+
+Copy `.env.example` to `.env.production` and set `VITE_FORM_ENDPOINT` to an
+endpoint that accepts a JSON POST. Without it the forms fall back to opening
+the visitor's mail client with everything pre-filled — see
+`src/lib/submit.js`. Either way a message reaches someone; nothing is ever
+silently dropped.
+
+## Routes
+
+Hash routes, so they survive a hard refresh on static hosting:
+
+| Route | What |
+| --- | --- |
+| `#/` | home (all sections) |
+| `#/services/:slug` | one of six service pages |
+| `#/privacy`, `#/cookies` | the legal statements |
+| `#booking`, `#faq`, … | in-page anchors, work from any route |
+
+Anything else under `#/` renders the not-found state.
+
+## Design system
+
+One rhythm for the whole site, in `src/index.css` and `src/components/Section.jsx`:
+
+- `<Section>` — vertical rhythm (`section-y` / `-sm` / `-tight`) plus the page
+  gutter. `prose` narrows to a reading measure.
+- `<SectionHeading>` — the kicker / title / intro block, left or centred.
+- `.type-display` · `.type-page` · `.type-section` · `.type-sub` · `.type-lead`
+  — every heading on the site is one of these.
+- `.card` follows the theme; `.card-pop` is the same surface plus a
+  `--card-accent` per service.
+
+If you find yourself writing `py-20 sm:py-28` or a bare `text-[clamp(...)]` in
+a section, reach for these instead — that drift is exactly what they replaced.
 
 ## How a few things work
 
@@ -40,6 +78,13 @@ white box. Size it with a height utility; the width follows the aspect ratio.
 Master art is `pics/HinIT-logo.png`; `scripts` for the derived favicons/OG image
 are not checked in — regenerate from the master if the logo changes.
 
+**Per-service colour** (`src/sections/Services.jsx`, `.card-pop` / `.accent-scope`)
+— each service carries a `--card-accent`. Those accents are tuned as text on a
+white card, so on the dark theme they are mixed towards white (`--card-ink-mix`)
+before being used as ink. The accent drives the surface wash, the icon chip, the
+link and the border, so the grid reads as six distinct services on every device
+and in both themes.
+
 **Services spotlight** (`src/sections/Services.jsx`) — one pointer listener on
 the grid writes `--mx`/`--my`/`--spot` onto every card, so the light reads as a
 single source sweeping across the bento rather than six separate hovers. The
@@ -60,14 +105,16 @@ the only two functions that need replacing when a real backend arrives.
   50+ clients, and the badges (ISO 27001, Microsoft Partner, …) are unverified.
 - **Testimonials** (`src/i18n.jsx` → `testimonials.items`) — invented quotes and
   names.
-- **Contact form** (`src/sections/Contact.jsx`) — validates client-side, then
-  fakes success. No backend.
-- **Appointment picker** — same: it validates and shows a confirmation, but
-  **nothing is actually booked and no email is sent**. Both forms have a
-  honeypot field ready; wire both to a real endpoint before launch.
+- **Booking availability** — the calendar's free/busy days are simulated (see
+  `src/lib/schedule.js`). The submitted request is real and reaches you, but it
+  is not checked against an actual diary.
+- **Company details** — the privacy statement (`src/i18n.jsx` → `legal`) names
+  HinIT, Amsterdam, `info@hinit.nl`. Add your KvK number and registered address
+  if you want the full imprint, and confirm the retention periods match what
+  you actually do.
 - **Domain** — `index.html` canonical/OG tags and the JSON-LD assume
   `https://hinit.nl/`. Update if that is wrong.
 - **English copy** — a functional mirror of the Dutch; have a native
   copywriter polish it.
 
-Not implemented: analytics, legal pages, real form submission.
+Not implemented: analytics (deliberately — see `#/cookies`).

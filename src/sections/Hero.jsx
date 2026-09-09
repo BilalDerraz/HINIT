@@ -1,20 +1,16 @@
-import { motion } from 'motion/react';
 import { Check, ArrowRight, ArrowDown } from 'lucide-react';
 import { useI18n } from '../i18n';
 import CTAButton from '../components/CTAButton';
 
-const ease = [0.16, 1, 0.3, 1];
-
+/**
+ * The hero is already on screen at load, so it animates on a timer rather than
+ * on scroll. One CSS keyframe with a delay — see `.rise-in` in index.css.
+ */
 function FadeIn({ children, delay = 0, className = '' }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.6, ease }}
-      className={className}
-    >
+    <div className={`rise-in ${className}`} style={{ animationDelay: `${delay}s` }}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -36,7 +32,7 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-5 pb-20 pt-28 text-center sm:pt-32">
+      <div className="container-page relative z-10 flex max-w-4xl flex-col items-center pb-20 pt-28 text-center sm:pt-32">
         <FadeIn delay={0.05}>
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-raise px-4 py-1.5 text-xs text-mist sm:mb-7">
             <span className="relative flex h-1.5 w-1.5">
@@ -48,13 +44,13 @@ export default function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.12}>
-          <h1 className="font-display text-[clamp(2.6rem,9vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.02em] text-fog">
+          <h1 className="type-display font-display font-semibold text-fog">
             {t.hero.titleStatic} <span className="text-gradient">{t.hero.titleAccent}</span>
           </h1>
         </FadeIn>
 
         <FadeIn delay={0.22}>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-mist sm:mt-7 sm:text-lg">{t.hero.sub}</p>
+          <p className="type-lead mt-6 max-w-2xl text-mist sm:mt-7">{t.hero.sub}</p>
         </FadeIn>
 
         <FadeIn delay={0.3} className="mt-8 flex w-full flex-col items-center gap-3 sm:mt-9 sm:w-auto sm:flex-row">

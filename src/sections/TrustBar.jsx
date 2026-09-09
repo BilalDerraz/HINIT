@@ -9,8 +9,8 @@ export default function TrustBar() {
   const { t } = useI18n();
 
   return (
-    <section className="relative border-y border-line py-8 sm:py-10" aria-label={t.trust.label}>
-      <p className="mb-6 text-center text-[11px] uppercase tracking-[0.3em] text-mist sm:mb-8">{t.trust.label}</p>
+    <section className="relative section-y-tight border-y border-line" aria-label={t.trust.label}>
+      <p className="kicker mb-6 text-center sm:mb-8">{t.trust.label}</p>
 
       {/* scrolls sideways on narrow screens instead of wrapping into a tall block */}
       <div className="no-scrollbar overflow-x-auto">
@@ -20,7 +20,7 @@ export default function TrustBar() {
               key={name}
               className="flex shrink-0 select-none items-center gap-2 font-display text-base font-medium tracking-tight text-mist transition-colors hover:text-fog sm:text-lg"
             >
-              <span className="bg-brand-gradient inline-block h-2 w-2 shrink-0 rounded-full" />
+              <span aria-hidden="true" className="bg-brand-gradient inline-block h-2 w-2 shrink-0 rounded-full" />
               {name}
             </span>
           ))}
