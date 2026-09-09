@@ -1,6 +1,9 @@
+import { useEffect, useRef } from 'react';
 import { I18nProvider, useI18n } from './i18n';
 import { ThemeProvider } from './theme';
 import NetworkBackground from './components/NetworkBackground';
+import { useRoute, serviceSlug, HOME } from './lib/router';
+import { useDocumentHead, SITE_URL } from './lib/head';
 
 import Nav from './sections/Nav';
 import Hero from './sections/Hero';
@@ -14,6 +17,7 @@ import Testimonials from './sections/Testimonials';
 import FAQ from './sections/FAQ';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
+import ServiceDetail from './sections/ServiceDetail';
 
 function SkipLink() {
   const { t } = useI18n();
@@ -27,30 +31,74 @@ function SkipLink() {
   );
 }
 
+function Home() {
+  const { t } = useI18n();
+  useDocumentHead({
+    title: t.meta.title,
+    description: t.meta.description,
+    canonical: SITE_URL,
+    ogLocale: t.ogLocale,
+  });
+  return (
+    <>
+      <Hero />
+      <TrustBar />
+      <Services />
+      <WhyHinIT />
+      <Process />
+      <Booking />
+      <Stats />
+      <Testimonials />
+      <FAQ />
+      <Contact />
+    </>
+  );
+}
+
+function Site() {
+  const { path, anchor } = useRoute();
+  const isHome = path === HOME;
+  const prevPath = useRef(path);
+
+  /**
+   * Coming back to the home page from a service page, the target section did
+   * not exist when the browser handled the hash, so it could not scroll there
+   * itself. Do it once the sections are actually mounted.
+   */
+  useEffect(() => {
+    const cameFromRoute = prevPath.current !== path && prevPath.current !== HOME;
+    prevPath.current = path;
+    if (!isHome || !cameFromRoute) return;
+
+    const frame = requestAnimationFrame(() => {
+      const el = anchor && document.getElementById(anchor);
+      if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+      else window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isHome, path, anchor]);
+
+  return (
+    <div className="relative z-10">
+      <SkipLink />
+      <Nav routePath={path} />
+      {/* tabIndex -1 so the skip link actually moves focus here, not just the
+          viewport — a plain #main target is not focusable on its own. */}
+      <main id="main" tabIndex={-1}>
+        {isHome ? <Home /> : <ServiceDetail slug={serviceSlug(path)} />}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <ThemeProvider>
       <I18nProvider>
         {/* the one animation we keep: the calm "constellation" network */}
         <NetworkBackground />
-
-        <div className="relative z-10">
-          <SkipLink />
-          <Nav />
-          <main id="main">
-            <Hero />
-            <TrustBar />
-            <Services />
-            <WhyHinIT />
-            <Process />
-            <Booking />
-            <Stats />
-            <Testimonials />
-            <FAQ />
-            <Contact />
-          </main>
-          <Footer />
-        </div>
+        <Site />
       </I18nProvider>
     </ThemeProvider>
   );

@@ -22,7 +22,7 @@ export default function Testimonials() {
   const { t } = useI18n();
 
   return (
-    <section className="relative py-20 sm:py-28 lg:py-32">
+    <section id="testimonials" aria-labelledby="testimonials-title" className="relative py-20 sm:py-28 lg:py-32">
       <div className="mx-auto max-w-7xl px-5">
         <div className="mb-12 max-w-2xl sm:mb-14">
           <Reveal>
@@ -31,7 +31,7 @@ export default function Testimonials() {
             </span>
           </Reveal>
           <Reveal delay={0.05}>
-            <h2 className="font-display text-[clamp(1.9rem,4.5vw,3.4rem)] font-semibold leading-[1.03] text-fog">
+            <h2 id="testimonials-title" className="font-display text-[clamp(1.9rem,4.5vw,3.4rem)] font-semibold leading-[1.03] text-fog">
               {t.testimonials.title}
             </h2>
           </Reveal>

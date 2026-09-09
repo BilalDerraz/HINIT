@@ -5,8 +5,12 @@ import { useEffect, useState } from 'react';
  * Uses a viewport band just under the fixed header rather than a plain
  * threshold, which keeps the highlight from flickering between two sections
  * on tall pages.
+ *
+ * `routeKey` re-runs the lookup after a route change: the sections do not
+ * exist on a service page, so without it the observer would stay torn down
+ * once the visitor navigated back to the home page.
  */
-export default function useActiveSection(ids) {
+export default function useActiveSection(ids, routeKey = '') {
   const [active, setActive] = useState(ids[0] ?? null);
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function useActiveSection(ids) {
 
     targets.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [ids]);
+  }, [ids, routeKey]);
 
   return active;
 }

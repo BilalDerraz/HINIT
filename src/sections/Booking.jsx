@@ -134,7 +134,9 @@ export default function Booking() {
     setErrors(err);
     if (Object.keys(err).length) return;
     setStatus('sending');
-    // TODO: POST to the scheduling backend once it exists.
+    /* There is no scheduling backend yet, so no appointment is actually
+       booked and no confirmation email is sent: this only simulates the round
+       trip. Point this at the real endpoint before taking bookings. */
     setTimeout(() => setStatus('success'), 1100);
   };
 
@@ -188,7 +190,7 @@ export default function Booking() {
 
               <div className="mt-auto flex items-center gap-3 rounded-2xl border border-line bg-raise p-4">
                 <Video className="h-5 w-5 shrink-0 text-accent" strokeWidth={1.8} />
-                <p className="text-xs leading-relaxed text-mist">{tb.perks[2].d}</p>
+                <p className="text-xs leading-relaxed text-mist">{tb.videoNote}</p>
               </div>
             </div>
           </Reveal>

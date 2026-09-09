@@ -1,29 +1,27 @@
-import { motion } from 'motion/react';
+import useInView from './useInView';
 
 /**
  * Subtle scroll-triggered reveal: a small fade + rise, nothing more.
- * Respects reduced-motion via the motion library defaults.
+ * Pure CSS transition driven by one IntersectionObserver — no animation
+ * library. Respects prefers-reduced-motion (see useInView and index.css).
  */
 export default function Reveal({
   children,
   delay = 0,
-  duration = 0.5,
   y = 16,
   className = '',
-  once = true,
-  amount = 0.3,
-  as = 'div',
+  as: Tag = 'div',
+  ...rest
 }) {
-  const M = motion[as] || motion.div;
+  const [ref, inView] = useInView();
   return (
-    <M
-      className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, amount }}
-      transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] }}
+    <Tag
+      ref={ref}
+      className={`reveal${inView ? ' is-in' : ''} ${className}`}
+      style={{ transitionDelay: `${delay}s`, '--reveal-y': `${y}px` }}
+      {...rest}
     >
       {children}
-    </M>
+    </Tag>
   );
 }

@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-5">
         <div className="grid gap-10 pb-12 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr] md:gap-12 md:pb-14">
           <div>
-            <a href="#top" className="inline-flex items-center rounded-lg" aria-label="HinIT — naar boven">
+            <a href="#top" className="inline-flex items-center rounded-lg" aria-label={t.nav.toTop}>
               <Logo className="h-8" />
             </a>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-mist">{t.footer.tagline}</p>
@@ -23,7 +23,10 @@ export default function Footer() {
             <ul className="space-y-3">
               {t.footer.nav.map((n, i) => (
                 <li key={n}>
-                  <a href={navHrefs[i]} className="text-sm text-fog/80 transition-colors hover:text-accent">
+                  <a
+                    href={navHrefs[i]}
+                    className="inline-flex min-h-[24px] items-center text-sm text-fog/80 transition-colors hover:text-accent"
+                  >
                     {n}
                   </a>
                 </li>
@@ -35,12 +38,18 @@ export default function Footer() {
             <h2 className="mb-4 text-xs uppercase tracking-[0.2em] text-mist/70">{t.footer.contactTitle}</h2>
             <ul className="space-y-3 text-sm text-fog/80">
               <li>
-                <a href="mailto:info@hinit.nl" className="flex items-center gap-2 transition-colors hover:text-accent">
+                <a
+                  href="mailto:info@hinit.nl"
+                  className="flex min-h-[24px] items-center gap-2 transition-colors hover:text-accent"
+                >
                   <Mail className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.7} /> info@hinit.nl
                 </a>
               </li>
               <li>
-                <a href="tel:+31684018864" className="flex items-center gap-2 transition-colors hover:text-accent">
+                <a
+                  href="tel:+31684018864"
+                  className="flex min-h-[24px] items-center gap-2 transition-colors hover:text-accent"
+                >
                   <Phone className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.7} /> +31 6 84018864
                 </a>
               </li>
@@ -56,10 +65,23 @@ export default function Footer() {
             © {year} HinIT. {t.footer.rights}
           </span>
           <div className="flex items-center gap-5">
-            <span className="flex items-center gap-1.5">{t.footer.built} 🇳🇱</span>
+            {/* The Dutch flag as two spans rather than 🇳🇱: Windows ships no
+                glyph for regional-indicator pairs, so the emoji renders there
+                as the bare letters "NL". */}
+            <span className="flex items-center gap-2">
+              {t.footer.built}
+              <span
+                aria-hidden="true"
+                className="inline-block h-3 w-[18px] shrink-0 rounded-[2px] ring-1 ring-black/10"
+                style={{
+                  background:
+                    'linear-gradient(180deg, #ae1c28 0 33.34%, #ffffff 33.34% 66.67%, #21468b 66.67% 100%)',
+                }}
+              />
+            </span>
             <a
               href="#top"
-              className="flex items-center gap-1.5 transition-colors hover:text-accent"
+              className="flex min-h-[24px] items-center gap-1.5 transition-colors hover:text-accent"
               aria-label={t.footer.backToTop}
             >
               <ArrowUp className="h-3.5 w-3.5" strokeWidth={2} />

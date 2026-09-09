@@ -40,6 +40,8 @@ html[data-theme='dark'] {
   --accent-soft: rgba(50, 87, 213, 0.18);
   --logo-color: #dfe6ff;
   --card-pop-border: transparent;
+  --card-pop-shadow: 0 12px 34px -14px rgba(10, 12, 30, 0.55);
+  --card-pop-shadow-hover: 0 26px 54px -18px rgba(10, 12, 30, 0.65);
   color-scheme: dark;
 }
 
@@ -56,7 +58,11 @@ html[data-theme='light'] {
   --card-shadow: 0 18px 44px -22px rgba(18, 24, 48, 0.3);
   --accent-soft: rgba(50, 87, 213, 0.09);
   --logo-color: #3257d5;
-  --card-pop-border: rgba(18, 24, 48, 0.09);
+  /* On the light page the cards are white on near-white, so they need a real
+     hairline and a real shadow or they dissolve into the background. */
+  --card-pop-border: rgba(18, 24, 48, 0.14);
+  --card-pop-shadow: 0 14px 34px -16px rgba(18, 24, 48, 0.3), 0 2px 6px -2px rgba(18, 24, 48, 0.07);
+  --card-pop-shadow-hover: 0 24px 48px -18px rgba(18, 24, 48, 0.36), 0 3px 10px -3px rgba(18, 24, 48, 0.1);
   color-scheme: light;
 }
 
@@ -126,9 +132,9 @@ html[data-theme='light'] {
    paint it with a mask instead of shipping one PNG per theme. */
 .logo-mark {
   display: block;
-  /* height comes from a utility class; width follows the master art 1663×661 */
+  /* height comes from a utility class; width follows the shipped art 800×317 */
   width: auto;
-  aspect-ratio: 1663 / 661;
+  aspect-ratio: 800 / 317;
   background-color: var(--logo-color);
   -webkit-mask: url('/logo.png') no-repeat center / contain;
   mask: url('/logo.png') no-repeat center / contain;
@@ -163,31 +169,85 @@ html[data-theme='dark'] .text-gradient {
 /* ---------- cards ---------- */
 
 /* Service / feature cards — high-contrast so they clearly stand out.
-   White in both themes: pops on dark, lifts off the light-grey page. */
+   Light in both themes: they pop on the dark canvas and lift off the light-grey
+   page (the light theme leans on --card-pop-border/-shadow for that).
+
+   Every card carries a --card-accent (set per service from the brand ramp in
+   Services.jsx). That colour drives the surface wash, the icon chip, the link
+   and the border, so the grid reads as six distinct services on *every* device
+   — the cursor spotlight below is an enhancement on top of it, not the only
+   source of colour. */
 .card-pop {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: #ffffff;
   color: #0f1424;
-  border: 1px solid var(--card-pop-border);
-  box-shadow: 0 12px 34px -14px rgba(10, 12, 30, 0.4);
-  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo);
+  /* The persistent per-service wash. It used to live only inside a
+     coarse-pointer media query, which meant that on a mouse-driven desktop all
+     six cards sat there identically white until the pointer entered the grid —
+     the colour was, in practice, invisible. It belongs in the base state. */
+  background-color: #ffffff;
+  background-image: radial-gradient(
+    130% 105% at 100% 0%,
+    color-mix(in srgb, var(--card-accent, #3257d5) 20%, transparent) 0%,
+    color-mix(in srgb, var(--card-accent, #3257d5) 7%, transparent) 42%,
+    transparent 78%
+  );
+  border: 1px solid color-mix(in srgb, var(--card-accent, #3257d5) 38%, var(--card-pop-border));
+  box-shadow: var(--card-pop-shadow);
+  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo),
+    border-color 0.3s var(--ease-out-expo);
 }
-.card-pop:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 26px 54px -18px rgba(10, 12, 30, 0.5);
+
+/* Explicit stacking inside the card: spotlight (1) under content (2) under the
+   lit hairline (3). Keeping every layer positive avoids the negative-z-index
+   trick, which only ever worked because .card-pop isolates itself. */
+.card-pop > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Only lift on devices that really hover. On touch, :hover sticks after a tap
+   and would leave a card floating until you tap elsewhere. */
+@media (hover: hover) and (pointer: fine) {
+  .card-pop:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--card-pop-shadow-hover);
+    border-color: color-mix(in srgb, var(--card-accent, #3257d5) 62%, transparent);
+  }
+}
+
+/* Touch feedback: a card is a link, so a tap should visibly acknowledge it. */
+.card-pop:active {
+  transform: scale(0.988);
+}
+
+/* The icon chip and the "read more" line, tinted per service. */
+.card-pop-chip {
+  background: color-mix(in srgb, var(--card-accent, #3257d5) 15%, transparent);
+  color: var(--card-accent, #3257d5);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card-accent, #3257d5) 24%, transparent);
+}
+.card-pop-link {
+  color: var(--card-accent, #3257d5);
+}
+/* body copy inside a card-pop — the surface is light in both themes, so this
+   one does not follow --color-mist */
+.card-pop-muted {
+  color: #3a4160;
 }
 
 /* Cursor spotlight.
    --mx/--my track the pointer inside the card and --spot carries the hue
    picked from where the pointer sits across the grid; both are written from
-   JS. --spot-on fades the whole thing in and out. */
+   JS. --spot-on fades the whole thing in and out. Touch devices never move a
+   pointer across the grid, so this simply stays at 0 there and the base wash
+   above carries the colour on its own. */
 .card-pop::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   pointer-events: none;
   opacity: var(--spot-on, 0);
   /* JS repaints this every frame while the pointer moves, so the transition
@@ -195,8 +255,8 @@ html[data-theme='dark'] .text-gradient {
   transition: opacity 0.2s ease;
   background: radial-gradient(
     260px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--spot, #3257d5) 22%, transparent) 0%,
-    color-mix(in srgb, var(--spot, #3257d5) 8%, transparent) 45%,
+    color-mix(in srgb, var(--spot, #3257d5) 30%, transparent) 0%,
+    color-mix(in srgb, var(--spot, #3257d5) 11%, transparent) 45%,
     transparent 72%
   );
 }
@@ -206,12 +266,10 @@ html[data-theme='dark'] .text-gradient {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   pointer-events: none;
   border-radius: inherit;
   opacity: var(--spot-on, 0);
-  /* JS repaints this every frame while the pointer moves, so the transition
-     only needs to smooth the jump back to 0 when it leaves the grid */
   transition: opacity 0.2s ease;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--spot, #3257d5) 42%, transparent);
 }
@@ -222,6 +280,12 @@ html[data-theme='dark'] .text-gradient {
   border-color: transparent;
   box-shadow: 0 18px 48px -16px rgba(50, 87, 213, 0.55);
 }
+@media (hover: hover) and (pointer: fine) {
+  .card-pop-feature:hover {
+    box-shadow: 0 28px 60px -18px rgba(50, 87, 213, 0.7);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+}
 /* on the gradient card a light wash reads better than a coloured one */
 .card-pop-feature::before {
   background: radial-gradient(
@@ -230,14 +294,9 @@ html[data-theme='dark'] .text-gradient {
     rgba(255, 255, 255, 0.07) 45%,
     transparent 72%
   );
-  z-index: 0;
 }
 .card-pop-feature::after {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
-}
-.card-pop-feature > * {
-  position: relative;
-  z-index: 1;
 }
 
 /* neutral card that follows the theme */
@@ -248,6 +307,29 @@ html[data-theme='dark'] .text-gradient {
 }
 
 /* ---------- motion ---------- */
+
+/* Scroll reveal. <Reveal> adds .reveal, then .is-in once the element has been
+   seen (see components/useInView.js). Keep the two in step: without these
+   rules every reveal would simply never animate. */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 16px));
+  transition: opacity 0.55s var(--ease-out-expo), transform 0.55s var(--ease-out-expo);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Safety net: if scripting or IntersectionObserver never marks an element as
+   seen, content must still be readable rather than invisible forever. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s !important;
+  }
+}
 
 /* live status dot (kept — tiny, subtle) */
 @keyframes ping-soft {

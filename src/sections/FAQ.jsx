@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { Plus, MessageCircleQuestion } from 'lucide-react';
 import { useI18n } from '../i18n';
 import Reveal from '../components/Reveal';
@@ -19,6 +19,7 @@ function Item({ q, a, open, onToggle }) {
         >
           <span className="font-display text-[15px] font-semibold text-fog sm:text-base">{q}</span>
           <span
+            aria-hidden="true"
             className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-line transition-all duration-300 ${
               open ? 'rotate-45 border-transparent bg-brand-gradient text-white' : 'text-accent'
             }`}
@@ -27,23 +28,21 @@ function Item({ q, a, open, onToggle }) {
           </span>
         </button>
       </h3>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="panel"
-            id={`${id}-panel`}
-            role="region"
-            aria-labelledby={`${id}-button`}
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden"
-          >
-            <p className="px-5 pb-5 text-[15px] leading-relaxed text-mist sm:px-6">{a}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* The panel stays mounted so the button's aria-controls always points at
+          a real element; `inert` keeps the collapsed answer out of the tab order
+          and away from screen readers. */}
+      <motion.div
+        id={`${id}-panel`}
+        role="region"
+        aria-labelledby={`${id}-button`}
+        inert={!open}
+        initial={false}
+        animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        className="overflow-hidden"
+      >
+        <p className="px-5 pb-5 text-[15px] leading-relaxed text-mist sm:px-6">{a}</p>
+      </motion.div>
     </div>
   );
 }

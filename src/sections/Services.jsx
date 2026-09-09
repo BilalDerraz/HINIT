@@ -1,9 +1,16 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { ServerCog, ShieldCheck, Network, LifeBuoy, Workflow, MonitorSmartphone, ArrowRight } from 'lucide-react';
+import { ServerCog, ShieldCheck, Network, LifeBuoy, Workflow, MonitorSmartphone, ArrowRight, Check } from 'lucide-react';
 import { useI18n } from '../i18n';
 import Reveal from '../components/Reveal';
+import { serviceHref } from '../lib/router';
 
-const icons = [ServerCog, ShieldCheck, Network, LifeBuoy, Workflow, MonitorSmartphone];
+export const icons = [ServerCog, ShieldCheck, Network, LifeBuoy, Workflow, MonitorSmartphone];
+
+/* One fixed colour per service, sweeping blue → teal → violet through the
+   brand family. Unlike the cursor spotlight these are always visible, so the
+   cards stay distinguishable on touch devices too — and every one of them
+   clears WCAG AA (>=4.5:1) as text on the white card. */
+export const accents = ['#3257d5', '#2563c9', '#1d6fb8', '#0d7a94', '#4a54d6', '#6a4fd8'];
 
 // bento layout: the first card is the big, gradient "feature" card
 const spanClasses = [
@@ -110,6 +117,14 @@ export default function Services() {
 
   const onPointerLeave = useCallback(() => schedule(null), [schedule]);
 
+  /* Cards move under the cursor while the page scrolls, so the cached pointer
+     position has to be re-applied or the wrong card stays lit. */
+  useEffect(() => {
+    const onScroll = () => pending.current && schedule(pending.current);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [schedule]);
+
   // Keyboard users get the same cue: light the card that has focus.
   const onFocus = useCallback(
     (e) => {
@@ -151,19 +166,25 @@ export default function Services() {
           className="grid auto-rows-[minmax(180px,auto)] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
         >
           {t.services.items.map((item, i) => {
-            const Icon = icons[i];
+            /* Wrap rather than index blindly: the copy lives in i18n, so a
+               seventh service added there must not take the whole page down
+               with an undefined icon. */
+            const Icon = icons[i % icons.length];
+            const accent = accents[i % accents.length];
             const feature = i === 0;
             return (
-              <Reveal key={item.t} delay={Math.min(i, 3) * 0.06} className={spanClasses[i]}>
+              <Reveal key={item.slug} delay={Math.min(i, 3) * 0.06} className={spanClasses[i] ?? 'md:col-span-1'}>
                 <a
                   data-spot-card
-                  href="#contact"
+                  href={serviceHref(item.slug)}
+                  style={{ '--card-accent': accent }}
+                  aria-label={`${item.t} — ${t.services.link}`}
                   className={`card-pop group ${feature ? 'card-pop-feature' : ''} flex h-full flex-col justify-between rounded-3xl p-6 sm:p-7`}
                 >
                   <div>
                     <div
                       className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
-                        feature ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'
+                        feature ? 'bg-white/20 text-white' : 'card-pop-chip'
                       }`}
                     >
                       <Icon style={{ width: 22, height: 22 }} strokeWidth={1.8} />
@@ -171,13 +192,26 @@ export default function Services() {
                     <h3 className={`font-display font-semibold ${feature ? 'text-2xl sm:text-3xl' : 'text-xl'}`}>
                       {item.t}
                     </h3>
-                    <p className={`mt-2 ${feature ? 'max-w-md text-base text-white/90' : 'text-sm leading-relaxed text-[#3a4160]'}`}>
+                    <p className={`mt-2 ${feature ? 'max-w-md text-base text-white/90' : 'card-pop-muted text-sm leading-relaxed'}`}>
                       {item.d}
                     </p>
+                    {/* The feature tile spans two rows from md up. Three of its
+                        own outcomes fill that height with something useful
+                        instead of leaving half the card empty. */}
+                    {feature && item.detail?.outcomes && (
+                      <ul className="mt-7 hidden list-none space-y-2.5 md:block">
+                        {item.detail.outcomes.slice(0, 3).map((o) => (
+                          <li key={o} className="flex items-start gap-2.5 text-sm text-white/85">
+                            <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+                            {o}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   <span
                     className={`mt-6 flex items-center gap-1.5 text-sm font-medium ${
-                      feature ? 'text-white' : 'text-brand'
+                      feature ? 'text-white' : 'card-pop-link'
                     }`}
                   >
                     {t.services.link}

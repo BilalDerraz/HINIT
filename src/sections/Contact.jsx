@@ -71,7 +71,9 @@ export default function Contact() {
     setErrors(e);
     if (Object.keys(e).length) return;
     setStatus('sending');
-    // TODO: POST to the form backend once it exists.
+    /* There is no form backend yet, so nothing is transmitted: this only
+       simulates the round trip. Point this at the real endpoint before
+       relying on the form to reach anyone. */
     setTimeout(() => setStatus('success'), 1200);
   };
 

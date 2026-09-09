@@ -1,6 +1,8 @@
 import { useI18n } from '../i18n';
 
-// TODO: replace these placeholder wordmarks with real client logos (SVG).
+/* Placeholder wordmarks, not real clients. Swap these for actual customer
+   logos (SVG) before the site is used to make a claim about who HinIT works
+   for — the section heading reads as a client list. */
 const placeholderLogos = ['Northwind', 'Vaneers', 'Meridian', 'Kavara', 'Orbital', 'Delfland', 'Nova Health', 'Brightlab'];
 
 export default function TrustBar() {

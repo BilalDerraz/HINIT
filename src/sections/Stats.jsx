@@ -7,7 +7,7 @@ export default function Stats() {
   const { t } = useI18n();
 
   return (
-    <section className="relative py-20 sm:py-24 lg:py-28">
+    <section id="stats" aria-labelledby="stats-title" className="relative py-20 sm:py-24 lg:py-28">
       <div className="mx-auto max-w-7xl px-5">
         <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-14">
           <Reveal>
@@ -16,7 +16,7 @@ export default function Stats() {
             </span>
           </Reveal>
           <Reveal delay={0.05}>
-            <h2 className="font-display text-[clamp(1.8rem,4vw,3rem)] font-semibold leading-[1.05] text-fog">
+            <h2 id="stats-title" className="font-display text-[clamp(1.8rem,4vw,3rem)] font-semibold leading-[1.05] text-fog">
               {t.stats.title}
             </h2>
           </Reveal>
