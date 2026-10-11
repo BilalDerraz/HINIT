@@ -693,8 +693,8 @@ export const translations = {
     },
     theme: { toLight: 'Light theme', toDark: 'Dark theme' },
     hero: {
-      titleStatic: 'Your IT worries?',
-      titleAccent: 'We take them off your hands.',
+      titleStatic: 'snabba nu',
+      titleAccent: '4euro voor 4',
       sub: 'HinIT makes sure you never have to keep an eye on your IT yourself. One dedicated team that monitors, manages, and handles everything for you.',
       ctaPrimary: 'Book a free call',
       ctaSecondary: 'See what we do',
